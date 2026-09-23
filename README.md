@@ -16,7 +16,7 @@ Vendors can fill questionnaires through a token link without an account, or an i
 
 ## Status
 
-Early build. The two-stage questionnaire design is finalized; implementation is in progress.
+Early build. The two-stage questionnaire design is finalized ([architecture](docs/architecture.md)); implementation is in progress.
 
 ## Stack
 
