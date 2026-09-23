@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { getMembership } from "@/lib/membership";
+import { createClient } from "@/lib/supabase/server";
 import { friendlyError } from "@/lib/errors";
 import type { ActionState } from "@/components/action-form";
 
@@ -61,7 +62,9 @@ export async function issueInvite(
 }
 
 export async function saveInternalAnswer(assessmentId: string, questionId: string, optionId: string) {
-  const { supabase } = await getMembership();
+  // Called on every click, so skip the membership lookup: the session is
+  // already checked by proxy.ts and RLS decides whether the write is allowed.
+  const supabase = await createClient();
 
   // Update first: authenticated users may only change option_id on an
   // existing answer, so an upsert (which rewrites every column) isn't allowed.

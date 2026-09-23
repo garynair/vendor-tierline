@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import { categoryLabels } from "@/lib/labels";
 import type { Enums } from "@/lib/supabase/database.types";
 
@@ -12,6 +12,7 @@ export type QuestionnaireQuestion = {
 };
 
 type Result = { error?: string } | undefined;
+type SaveStatus = "pending" | "slow" | "saved";
 
 // Shared by the vendor token page and internal fill mode. Each choice is
 // saved as soon as it's picked, so a vendor can leave and resume.
@@ -30,20 +31,49 @@ export function QuestionnaireForm({
 }) {
   const [answers, setAnswers] = useState(initialAnswers);
   const [saveErrors, setSaveErrors] = useState<Record<string, string>>({});
-  const [savingId, setSavingId] = useState<string | null>(null);
+  // Per-question save state. "Saving…" is only shown once a save is slow,
+  // so normal clicks just flash a brief "Saved".
+  const [saveStatus, setSaveStatus] = useState<Record<string, SaveStatus>>({});
+  // Latest save per question, so an older response can't overwrite a newer click.
+  const latestSave = useRef(new Map<string, number>());
+  const saveCounter = useRef(0);
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [submitting, startSubmit] = useTransition();
 
   const answeredCount = questions.filter((question) => answers[question.id]).length;
   const complete = answeredCount === questions.length;
 
+  function setStatus(questionId: string, status: SaveStatus | null) {
+    setSaveStatus((current) => {
+      const next = { ...current };
+      if (status) next[questionId] = status;
+      else delete next[questionId];
+      return next;
+    });
+  }
+
   async function choose(questionId: string, optionId: string) {
     const previous = answers[questionId];
     setAnswers((current) => ({ ...current, [questionId]: optionId }));
-    setSavingId(questionId);
-    const result = await saveAnswer(questionId, optionId);
-    setSavingId((current) => (current === questionId ? null : current));
+    const saveId = ++saveCounter.current;
+    latestSave.current.set(questionId, saveId);
+    setStatus(questionId, "pending");
+    const slowTimer = setTimeout(() => {
+      if (latestSave.current.get(questionId) === saveId) setStatus(questionId, "slow");
+    }, 500);
+
+    let result: Result;
+    try {
+      result = await saveAnswer(questionId, optionId);
+    } catch {
+      result = { error: "Couldn't save that answer. Check your connection and try again." };
+    }
+    clearTimeout(slowTimer);
+    // A newer click on the same question owns the indicator now.
+    if (latestSave.current.get(questionId) !== saveId) return;
+
     if (result?.error) {
+      setStatus(questionId, null);
       setAnswers((current) => {
         const next = { ...current };
         if (previous) next[questionId] = previous;
@@ -57,8 +87,14 @@ export function QuestionnaireForm({
         delete next[questionId];
         return next;
       });
+      setStatus(questionId, "saved");
+      setTimeout(() => {
+        if (latestSave.current.get(questionId) === saveId) setStatus(questionId, null);
+      }, 1500);
     }
   }
+
+  const saving = Object.values(saveStatus).some((status) => status === "pending" || status === "slow");
 
   return (
     <div className="flex flex-col gap-6">
@@ -86,7 +122,8 @@ export function QuestionnaireForm({
                   {option.label}
                 </label>
               ))}
-              {savingId === question.id && <p className="text-xs text-gray-500">Saving…</p>}
+              {saveStatus[question.id] === "slow" && <p className="text-xs text-gray-500">Saving…</p>}
+              {saveStatus[question.id] === "saved" && <p className="text-xs text-green-700">Saved</p>}
               {saveErrors[question.id] && (
                 <p className="text-xs text-red-600">{saveErrors[question.id]}</p>
               )}
@@ -103,7 +140,7 @@ export function QuestionnaireForm({
         <div>
           <button
             type="button"
-            disabled={!complete || submitting || savingId !== null}
+            disabled={!complete || submitting || saving}
             onClick={() => {
               if (!window.confirm("Submit? Answers can't be changed afterwards.")) return;
               setSubmitError(null);
