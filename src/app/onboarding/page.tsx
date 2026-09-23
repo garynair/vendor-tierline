@@ -11,7 +11,7 @@ export default function OnboardingPage() {
       <div>
         <h1 className="text-2xl font-semibold">Set up your organization</h1>
         <p className="text-sm text-gray-500">
-          This becomes your practice workspace. You&apos;ll be its admin.
+          This is where your team tiers vendors. You&apos;ll be its admin.
         </p>
       </div>
 
