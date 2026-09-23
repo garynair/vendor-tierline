@@ -1,6 +1,9 @@
 @import "tailwindcss";
 
 :root {
+  /* Light only for now: the UI's colours assume a light background, so
+     following the OS dark setting made text unreadable on light panels. */
+  color-scheme: light;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -12,12 +15,6 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
 
 body {
   background: var(--background);
