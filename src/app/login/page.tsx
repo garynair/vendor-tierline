@@ -11,7 +11,7 @@ export default function LoginPage() {
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-4">
       <div>
         <h1 className="text-2xl font-semibold">Vendor Tierline</h1>
-        <p className="text-sm text-gray-500">Log in to access the lab.</p>
+        <p className="text-sm text-gray-500">Log in to manage vendor risk.</p>
       </div>
 
       <form action={formAction} className="flex flex-col gap-4">

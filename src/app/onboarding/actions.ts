@@ -3,7 +3,7 @@
 import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { demoVendorRiskScenario } from "@/lib/demo-scenario";
+import { seedDefaultTemplates } from "@/lib/default-templates";
 
 export async function createOrganization(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
@@ -44,9 +44,11 @@ export async function createOrganization(_prevState: unknown, formData: FormData
     return { error: membershipError.message };
   }
 
-  await supabase
-    .from("scenarios")
-    .insert({ organization_id: orgId, ...demoVendorRiskScenario });
+  // Risk tiers are seeded by a database trigger; questionnaires start from
+  // the defaults. A failure here isn't fatal: Settings offers to load them.
+  try {
+    await seedDefaultTemplates(supabase, orgId);
+  } catch {}
 
   redirect("/dashboard");
 }

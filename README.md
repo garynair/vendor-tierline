@@ -16,7 +16,7 @@ Vendors can fill questionnaires through a token link without an account, or an i
 
 ## Status
 
-Early build. The two-stage questionnaire design is finalized ([architecture](docs/architecture.md)); implementation is in progress.
+Early build. The two-stage flow from the [architecture](docs/architecture.md) is implemented end to end: vendor token links, internal fill, scoring, reviewer confirm/override, and tier-mapped follow-ups. Schema changes live in `supabase/migrations/`.
 
 ## Stack
 

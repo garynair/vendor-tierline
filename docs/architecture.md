@@ -8,7 +8,7 @@ Vendor Tierline is a two-stage vendor risk questionnaire portal: each vendor eng
 
 It replaces the original Phase 1 "practice lab", where a GRC learner rehearsed judgment calls against a rubric scored by keyword matching. The foundation from Phase 1 (organizations, memberships, frameworks, controls, org-scoped RLS) carries over unchanged.
 
-**Status:** design finalized 22 Sep 2026; build not started. The live app still runs the Phase 1 schema.
+**Status:** design finalized 22 Sep 2026. Schema, RLS and RPCs applied 23 Sep 2026 (`supabase/migrations/`); the app for the two-stage flow is built on the `vendor-questionnaires` branch. Phase 1 tables are still in the database until that branch ships.
 
 ## Core model: vendors and engagements
 
@@ -117,4 +117,4 @@ These are deliberate gaps, deferred so the core flow can ship:
 
 **Before real vendors use it:** turn email confirmation back on with custom SMTP (for example Resend), and retire the old `grc-practice-lab.vercel.app` domain and its Supabase redirect URL.
 
-**Next step:** start a Claude Code session inside `~/projects/vendor-tierline` and build the migrations first: new tables, RLS, and the three vendor RPCs, using the Postgres best-practices skill.
+**Next step:** merge `vendor-questionnaires`, then drop `scenarios`, `submissions` and `scores` in a follow-up migration once the deployed app no longer reads them.

@@ -1,39 +1,30 @@
-import { redirect } from "next/navigation";
-import { createClient } from "@/lib/supabase/server";
+import Link from "next/link";
+import { getMembership } from "@/lib/membership";
 import { signOut } from "./actions";
 
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
-  const supabase = await createClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    redirect("/login");
-  }
-
-  const { data: membership } = await supabase
-    .from("memberships")
-    .select("role, organizations(name)")
-    .eq("user_id", user.id)
-    .limit(1)
-    .maybeSingle();
-
-  if (!membership) {
-    redirect("/onboarding");
-  }
-
-  const orgName = (membership.organizations as unknown as { name: string } | null)?.name;
+export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
+  const { orgName, role } = await getMembership();
 
   return (
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
-        <div>
-          <p className="font-semibold">Vendor Tierline</p>
-          <p className="text-xs text-gray-500">
-            {orgName} · {membership.role}
-          </p>
+        <div className="flex items-center gap-8">
+          <div>
+            <Link href="/dashboard" className="font-semibold">
+              Vendor Tierline
+            </Link>
+            <p className="text-xs text-gray-500">
+              {orgName} · {role}
+            </p>
+          </div>
+          <nav className="flex gap-4 text-sm">
+            <Link href="/dashboard" className="hover:underline">
+              Vendors
+            </Link>
+            <Link href="/dashboard/settings" className="hover:underline">
+              Settings
+            </Link>
+          </nav>
         </div>
         <form action={signOut}>
           <button type="submit" className="text-sm underline">
@@ -41,7 +32,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           </button>
         </form>
       </header>
-      <main className="mx-auto max-w-3xl px-6 py-8">{children}</main>
+      <main className="mx-auto max-w-4xl px-6 py-8">{children}</main>
     </div>
   );
 }
