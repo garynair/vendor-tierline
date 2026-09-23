@@ -1,9 +1,7 @@
 @import "tailwindcss";
 
 :root {
-  /* Light only for now: the UI's colours assume a light background, so
-     following the OS dark setting made text unreadable on light panels. */
-  color-scheme: light;
+  color-scheme: light dark;
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -15,6 +13,58 @@
   --font-mono: var(--font-geist-mono);
 }
 
+/*
+ * Dark mode follows the OS setting. Rather than a dark: variant on every
+ * class, the palette entries the UI uses are remapped to their dark
+ * counterparts: light tints (bg-*-50/100, border-*-200) become deep shades
+ * and dark text (text-*-600..900) becomes light, so every existing
+ * combination keeps its contrast. Values are Tailwind's own palette shades.
+ * If a component starts using a shade not listed here, add its mapping.
+ */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+
+    /* black buttons become white buttons; white surfaces become dark */
+    --color-black: #ededed;
+    --color-white: #0a0a0a;
+
+    --color-gray-50: oklch(13% 0.028 261.692); /* gray-950 */
+    --color-gray-100: oklch(27.8% 0.033 256.848); /* gray-800 */
+    --color-gray-200: oklch(37.3% 0.034 259.733); /* gray-700 */
+    --color-gray-300: oklch(44.6% 0.03 256.802); /* gray-600 */
+    --color-gray-400: oklch(55.1% 0.027 264.364); /* gray-500 */
+    --color-gray-500: oklch(70.7% 0.022 261.325); /* gray-400 */
+    --color-gray-600: oklch(87.2% 0.01 258.338); /* gray-300 */
+    --color-gray-700: oklch(92.8% 0.006 264.531); /* gray-200 */
+
+    --color-red-100: oklch(39.6% 0.141 25.723); /* red-900 */
+    --color-red-300: oklch(44.4% 0.177 26.899); /* red-800 */
+    --color-red-600: oklch(70.4% 0.191 22.216); /* red-400 */
+    --color-red-700: oklch(70.4% 0.191 22.216); /* red-400 */
+    --color-red-800: oklch(88.5% 0.062 18.334); /* red-200 */
+
+    --color-orange-100: oklch(40.8% 0.123 38.172); /* orange-900 */
+    --color-orange-800: oklch(90.1% 0.076 70.697); /* orange-200 */
+
+    --color-yellow-100: oklch(42.1% 0.095 57.708); /* yellow-900 */
+    --color-yellow-800: oklch(94.5% 0.129 101.54); /* yellow-200 */
+
+    --color-amber-50: oklch(27.9% 0.077 45.635); /* amber-950 */
+    --color-amber-200: oklch(47.3% 0.137 46.201); /* amber-800 */
+
+    --color-green-50: oklch(26.6% 0.065 152.934); /* green-950 */
+    --color-green-100: oklch(39.3% 0.095 152.535); /* green-900 */
+    --color-green-200: oklch(44.8% 0.119 151.328); /* green-800 */
+    --color-green-700: oklch(79.2% 0.209 151.711); /* green-400 */
+    --color-green-800: oklch(87.1% 0.15 154.449); /* green-300 */
+
+    --color-blue-50: oklch(28.2% 0.091 267.935); /* blue-950 */
+    --color-blue-200: oklch(42.4% 0.199 265.638); /* blue-800 */
+    --color-blue-900: oklch(88.2% 0.059 254.128); /* blue-200 */
+  }
+}
 
 body {
   background: var(--background);
