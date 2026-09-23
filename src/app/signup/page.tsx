@@ -10,7 +10,7 @@ export default function SignupPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-4">
       <div>
-        <h1 className="text-2xl font-semibold">GRC Practice Lab</h1>
+        <h1 className="text-2xl font-semibold">Vendor Tierline</h1>
         <p className="text-sm text-gray-500">Create an account to start practicing.</p>
       </div>
 

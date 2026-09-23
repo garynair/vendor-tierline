@@ -30,7 +30,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="min-h-screen">
       <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div>
-          <p className="font-semibold">GRC Practice Lab</p>
+          <p className="font-semibold">Vendor Tierline</p>
           <p className="text-xs text-gray-500">
             {orgName} · {membership.role}
           </p>
