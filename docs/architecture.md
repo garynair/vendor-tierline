@@ -8,7 +8,7 @@ Vendor Tierline is a two-stage vendor risk questionnaire portal: each vendor eng
 
 It replaces the original Phase 1 "practice lab", where a GRC learner rehearsed judgment calls against a rubric scored by keyword matching. The foundation from Phase 1 (organizations, memberships, frameworks, controls, org-scoped RLS) carries over unchanged.
 
-**Status:** design finalized 22 Sep 2026. Schema, RLS and RPCs applied 23 Sep 2026 (`supabase/migrations/`); the app for the two-stage flow is built on the `vendor-questionnaires` branch. Phase 1 tables are still in the database until that branch ships.
+**Status:** design finalized 22 Sep 2026; shipped 23 Sep 2026 (PR #1). Schema history is in `supabase/migrations/`; the Phase 1 tables have been dropped.
 
 ## Core model: vendors and engagements
 
@@ -95,7 +95,7 @@ Ten new tables sit on top of the Phase 1 foundation; three Phase 1 tables are re
 
 **Kept from Phase 1:** `organizations`, `memberships`, `frameworks`, `controls`, and the `current_user_role(org_id)` helper.
 
-**To remove:** `scenarios`, `submissions`, `scores`, and the keyword scorer in `src/lib/scoring.ts`.
+**Removed:** `scenarios`, `submissions`, `scores`, and the keyword scorer (23 Sep 2026).
 
 ## Out of scope for v1
 
@@ -117,4 +117,4 @@ These are deliberate gaps, deferred so the core flow can ship:
 
 **Before real vendors use it:** turn email confirmation back on with custom SMTP (for example Resend), and retire the old `grc-practice-lab.vercel.app` domain and its Supabase redirect URL.
 
-**Next step:** merge `vendor-questionnaires`, then drop `scenarios`, `submissions` and `scores` in a follow-up migration once the deployed app no longer reads them.
+**Next step:** the pre-launch items above (email confirmation with custom SMTP, retiring the old domain).
