@@ -104,6 +104,8 @@ These are deliberate gaps, deferred so the core flow can ship:
 - **Reassessment and renewal cadence:** no recurrence concept (such as annual re-tiering) yet.
 - **Full audit log of status transitions:** only `reviewed_by` and `reviewed_at` are captured; there is no generic event table.
 - **Multi-stakeholder approval:** no committee sign-off across legal, GRC, IT, procurement, HR and leadership. One reviewer decides in v1.
+- **Teammate invites:** one organization per user, and there's no way to invite others into an org yet.
+- **Free-text or evidence answers:** follow-up questions are multiple choice only; no text answers or file uploads.
 
 ## Infrastructure and build notes
 
@@ -115,6 +117,22 @@ These are deliberate gaps, deferred so the core flow can ship:
 | Hosting | Vercel project `vendor-tierline` (team axionsec), auto-deploys from `main`; live at [vendor-tierline.vercel.app](https://vendor-tierline.vercel.app) |
 | Agent skills | `supabase` and `supabase-postgres-best-practices` in `.claude/skills/` |
 
-**Before real vendors use it:** turn email confirmation back on with custom SMTP (for example Resend), and retire the old `grc-practice-lab.vercel.app` domain and its Supabase redirect URL.
+## Launch checklist
 
-**Next step:** the pre-launch items above (email confirmation with custom SMTP, retiring the old domain).
+Status as of v1.0 (23 Sep 2026). Items marked *dashboard* are Supabase or Vercel settings, not code.
+
+**Done**
+
+- [x] Retire `grc-practice-lab.vercel.app`: removed from the Vercel project; no Supabase redirect URL pointed at it.
+- [x] Supabase Site URL set to `https://vendor-tierline.vercel.app`, with `https://vendor-tierline.vercel.app/**` as a redirect URL.
+- [x] App support for email confirmation: `/auth/confirm` verifies the emailed token, and `/auth/error` handles expired or used links.
+
+**Open**
+
+- [ ] **Custom SMTP** *(dashboard: Authentication → Emails → SMTP)*. Required before turning on confirmation: from 26 Sep 2026, Supabase's default sender only emails members of the Supabase organization. Use a provider such as Resend with a verified sending domain.
+- [ ] **Confirm signup template** *(dashboard: Authentication → Emails → Confirm signup)*. Change the link to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`.
+- [ ] **Turn on Confirm email** *(dashboard)*. Only after the two items above; until then signups log in immediately.
+- [ ] **Password rules** *(dashboard: Authentication → Sign In / Providers → Email)*. Minimum length 10, letters and digits, to match the signup form.
+- [ ] **Leaked-password protection**. Requires the Supabase Pro plan; the project is on Free.
+
+Testers can use the app now with confirmation off. Each signup gets its own private organization.
