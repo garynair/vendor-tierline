@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getMembership } from "@/lib/membership";
+import { APP_VERSION } from "@/lib/version";
 import { signOut } from "./actions";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
@@ -13,6 +14,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             <Link href="/dashboard" className="font-semibold">
               Vendor Tierline
             </Link>
+            <span className="ml-2 rounded-full border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-500">
+              v{APP_VERSION}
+            </span>
             <p className="text-xs text-gray-500">
               {orgName} · {role}
             </p>
