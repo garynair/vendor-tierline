@@ -32,11 +32,13 @@ export async function updateSession(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   // Vendors open /assess/[token] without an account; the token is their auth.
+  // /auth/* handles email confirmation links before a session exists.
   const isPublicRoute =
     pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
-    pathname.startsWith("/assess/");
+    pathname.startsWith("/assess/") ||
+    pathname.startsWith("/auth/");
 
   if (!user && !isPublicRoute) {
     const url = request.nextUrl.clone();

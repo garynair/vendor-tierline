@@ -14,6 +14,7 @@ import {
   submitInternal,
 } from "../actions";
 import { InvitePanel } from "./invite-panel";
+import { AssessmentProgress } from "./assessment-progress";
 
 const inputClass = "rounded border border-gray-300 px-3 py-2 font-normal";
 
@@ -87,6 +88,8 @@ export default async function AssessmentPage({ params }: PageProps<"/dashboard/a
           {statusLabels[assessment.status]}
         </span>
       </div>
+
+      {isStaff && <AssessmentProgress type={assessment.type} status={assessment.status} />}
 
       {isOpen && isStaff && (
         <section className="flex flex-col gap-3 rounded border border-gray-200 p-4">

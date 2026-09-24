@@ -2,50 +2,51 @@
 
 import { useActionState } from "react";
 import Link from "next/link";
+import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
 import { signup } from "./actions";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signup, undefined);
 
   return (
-    <main className="mx-auto flex min-h-screen max-w-sm flex-col justify-center gap-6 px-4">
-      <div>
-        <h1 className="text-2xl font-semibold">Vendor Tierline</h1>
-        <p className="text-sm text-gray-500">Create an account to start practicing.</p>
-      </div>
-
-      <form action={formAction} className="flex flex-col gap-4">
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          required
-          className="rounded border border-gray-300 px-3 py-2"
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Password"
-          required
-          minLength={6}
-          className="rounded border border-gray-300 px-3 py-2"
-        />
-        {state?.error && <p className="text-sm text-red-600">{state.error}</p>}
-        <button
-          type="submit"
-          disabled={pending}
-          className="rounded bg-black px-3 py-2 text-white disabled:opacity-50"
-        >
-          {pending ? "Signing up…" : "Sign up"}
-        </button>
-      </form>
-
-      <p className="text-sm text-gray-500">
-        Already have an account?{" "}
-        <Link href="/login" className="underline">
-          Log in
-        </Link>
-      </p>
-    </main>
+    <AuthShell
+      title="Create your workspace"
+      subtitle="Set up your team's vendor risk program. You'll start with a ready-made tiering questionnaire you can adjust."
+      footer={
+        <p>
+          Already have an account?{" "}
+          <Link href="/login" className="font-medium text-emerald-400 hover:text-emerald-300">
+            Log in
+          </Link>
+        </p>
+      }
+    >
+      {state?.message ? (
+        <AuthNotice tone="success">{state.message}</AuthNotice>
+      ) : (
+        <form action={formAction} className="flex flex-col gap-4">
+          <AuthField label="Work email">
+            <input type="email" name="email" autoComplete="email" required className={authInputClass} />
+          </AuthField>
+          <AuthField label="Password">
+            <input
+              type="password"
+              name="password"
+              autoComplete="new-password"
+              required
+              minLength={10}
+              className={authInputClass}
+            />
+            <span className="text-xs font-normal text-zinc-500">
+              At least 10 characters, with letters and numbers.
+            </span>
+          </AuthField>
+          {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
+          <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
+            {pending ? "Creating account…" : "Create account"}
+          </button>
+        </form>
+      )}
+    </AuthShell>
   );
 }

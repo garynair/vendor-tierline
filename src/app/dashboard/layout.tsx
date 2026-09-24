@@ -1,5 +1,7 @@
 import Link from "next/link";
 import { getMembership } from "@/lib/membership";
+import { APP_VERSION } from "@/lib/version";
+import { LogoMark } from "@/components/logo";
 import { signOut } from "./actions";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
@@ -10,10 +12,15 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
       <header className="flex items-center justify-between border-b border-gray-200 px-6 py-4">
         <div className="flex items-center gap-8">
           <div>
-            <Link href="/dashboard" className="font-semibold">
-              Vendor Tierline
-            </Link>
-            <p className="text-xs text-gray-500">
+            <div className="flex items-center gap-2">
+              <Link href="/dashboard">
+                <LogoMark tone="auto" />
+              </Link>
+              <span className="rounded-full border border-gray-200 px-1.5 py-0.5 text-[10px] text-gray-500">
+                v{APP_VERSION}
+              </span>
+            </div>
+            <p className="ml-11 text-xs text-gray-500">
               {orgName} · {role}
             </p>
           </div>
