@@ -49,10 +49,13 @@ function ProductPreview() {
         </span>
       </div>
       <ul className="divide-y divide-zinc-800/80">
-        {previewRows.map((row) => {
+        {previewRows.map((row, index) => {
           const tierClass = previewTierClass[row.tier];
           return (
-            <li key={row.vendor} className="flex items-center gap-4 px-4 py-2">
+            <li
+              key={row.vendor}
+              className={`flex items-center gap-4 px-4 py-2 ${index === 3 ? "[@media(max-height:620px)]:hidden" : ""}`}
+            >
               <div className="min-w-0 flex-1">
                 <p className="truncate text-sm font-medium text-zinc-100">{row.vendor}</p>
                 <p className="truncate text-xs text-zinc-500">{row.engagement}</p>
@@ -96,48 +99,52 @@ export function AuthShell({
         <div aria-hidden="true" className="absolute -left-32 -top-32 h-96 w-96 rounded-full bg-emerald-500/20 blur-3xl" />
         <div aria-hidden="true" className="absolute -bottom-40 right-0 h-96 w-96 rounded-full bg-emerald-700/10 blur-3xl" />
 
-        <div className="relative flex h-full flex-col justify-between gap-6 p-10 xl:px-14">
-          <LogoMark size="lg" />
+        {/* Scrolls instead of clipping on very short screens. */}
+        <div className="absolute inset-0 overflow-y-auto">
+          <div className="relative flex min-h-full flex-col justify-between gap-6 px-10 py-8 xl:px-14 [@media(min-height:800px)]:py-10">
+            <LogoMark size="lg" />
 
-          <div className="flex max-w-xl flex-col gap-6">
-            <div className="flex flex-col gap-3">
-              <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
-                Third-party risk management
-              </p>
-              <h2 className="text-3xl font-semibold leading-tight text-zinc-50 [@media(min-height:960px)]:xl:text-4xl">
-                Tier every vendor engagement by the risk it actually carries.
-              </h2>
-              <p className="text-sm leading-relaxed text-zinc-400">
-                A short scored questionnaire sets the tier. The right due diligence follows. No
-                spreadsheets to chase.
-              </p>
+            <div className="flex max-w-xl flex-col gap-6">
+              <div className="flex flex-col gap-3">
+                <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
+                  Third-party risk management
+                </p>
+                <h2 className="text-3xl font-semibold leading-tight text-zinc-50 [@media(min-height:960px)]:xl:text-4xl">
+                  Tier every vendor engagement by the risk it actually carries.
+                </h2>
+                <p className="text-sm leading-relaxed text-zinc-400">
+                  A short scored questionnaire sets the tier. The right due diligence follows. No
+                  spreadsheets to chase.
+                </p>
+              </div>
+
+              <ProductPreview />
+
+              {/* Highlight cards only when there's height for them. */}
+              <ul className="hidden grid-cols-2 gap-3 [@media(min-height:760px)]:grid">
+                {highlights.map((item) => (
+                  <li key={item.title} className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2.5">
+                    <p className="flex items-center gap-2 text-sm font-medium text-zinc-100">
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
+                      {item.title}
+                    </p>
+                    {/* descriptions only when there is vertical room */}
+                    <p className="mt-1 hidden text-xs leading-relaxed text-zinc-400 [@media(min-height:900px)]:block">
+                      {item.body}
+                    </p>
+                  </li>
+                ))}
+              </ul>
             </div>
 
-            <ProductPreview />
-
-            <ul className="grid grid-cols-2 gap-3">
-              {highlights.map((item) => (
-                <li key={item.title} className="rounded-lg border border-zinc-800 bg-zinc-900/50 px-3 py-2.5">
-                  <p className="flex items-center gap-2 text-sm font-medium text-zinc-100">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
-                    {item.title}
-                  </p>
-                  {/* descriptions only when there is vertical room */}
-                  <p className="mt-1 hidden text-xs leading-relaxed text-zinc-400 [@media(min-height:900px)]:block">
-                    {item.body}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="flex items-center justify-between gap-6 text-xs text-zinc-500">
-            <p className="flex flex-wrap gap-x-4 gap-y-1">
-              <span><span className="font-semibold text-zinc-300">7</span> risk factors</span>
-              <span><span className="font-semibold text-zinc-300">4</span> configurable tiers</span>
-              <span><span className="font-semibold text-zinc-300">2</span>-stage review</span>
-            </p>
-            <span className="shrink-0 rounded-full border border-zinc-800 px-2 py-0.5">v{APP_VERSION}</span>
+            <div className="flex items-center justify-between gap-6 text-xs text-zinc-500">
+              <p className="flex flex-wrap gap-x-4 gap-y-1">
+                <span><span className="font-semibold text-zinc-300">7</span> risk factors</span>
+                <span><span className="font-semibold text-zinc-300">4</span> configurable tiers</span>
+                <span><span className="font-semibold text-zinc-300">2</span>-stage review</span>
+              </p>
+              <span className="shrink-0 rounded-full border border-zinc-800 px-2 py-0.5">v{APP_VERSION}</span>
+            </div>
           </div>
         </div>
       </aside>
