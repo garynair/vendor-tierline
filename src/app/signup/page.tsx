@@ -3,6 +3,7 @@
 import { useActionState } from "react";
 import Link from "next/link";
 import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
+import { DemoLogin } from "@/components/demo-login";
 import { signup } from "./actions";
 
 export default function SignupPage() {
@@ -21,6 +22,8 @@ export default function SignupPage() {
         </p>
       }
     >
+      {!state?.message && <DemoLogin />}
+
       {state?.message ? (
         <AuthNotice tone="success">{state.message}</AuthNotice>
       ) : (
