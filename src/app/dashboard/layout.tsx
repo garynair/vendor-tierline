@@ -28,6 +28,9 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
             <Link href="/dashboard" className="hover:underline">
               Vendors
             </Link>
+            <Link href="/dashboard/insights" className="hover:underline">
+              Insights
+            </Link>
             <Link href="/dashboard/settings" className="hover:underline">
               Settings
             </Link>
