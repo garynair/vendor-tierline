@@ -111,11 +111,10 @@ These are deliberate gaps, deferred so the core flow can ship:
 
 | Piece | Detail |
 | --- | --- |
-| Repo | `garynair/vendor-tierline` (private); local `~/projects/vendor-tierline` |
+| Repo | `garynair/vendor-tierline` |
 | Stack | Next.js 16, Tailwind, Supabase |
-| Database | Supabase project `vendor-tierline` (`evmvclibywkkwdusuded`, us-east-1) |
-| Hosting | Vercel project `vendor-tierline` (team axionsec), auto-deploys from `main`; live at [vendor-tierline.vercel.app](https://vendor-tierline.vercel.app) |
-| Agent skills | `supabase` and `supabase-postgres-best-practices` in `.claude/skills/` |
+| Database | Supabase (Postgres, Auth, row-level security) |
+| Hosting | Vercel, auto-deploys from `main`; live at [vendor-tierline.vercel.app](https://vendor-tierline.vercel.app) |
 
 ## Launch checklist
 
@@ -127,12 +126,4 @@ Status as of v1.0 (23 Sep 2026). Items marked *dashboard* are Supabase or Vercel
 - [x] Supabase Site URL set to `https://vendor-tierline.vercel.app`, with `https://vendor-tierline.vercel.app/**` as a redirect URL.
 - [x] App support for email confirmation: `/auth/confirm` verifies the emailed token, and `/auth/error` handles expired or used links.
 
-**Open**
-
-- [ ] **Custom SMTP** *(dashboard: Authentication → Emails → SMTP)*. Required before turning on confirmation: from 26 Sep 2026, Supabase's default sender only emails members of the Supabase organization. Use a provider such as Resend with a verified sending domain.
-- [ ] **Confirm signup template** *(dashboard: Authentication → Emails → Confirm signup)*. Change the link to `{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email`.
-- [ ] **Turn on Confirm email** *(dashboard)*. Only after the two items above; until then signups log in immediately.
-- [ ] **Password rules** *(dashboard: Authentication → Sign In / Providers → Email)*. Minimum length 10, letters and digits, to match the signup form.
-- [ ] **Leaked-password protection**. Requires the Supabase Pro plan; the project is on Free.
-
-Testers can use the app now with confirmation off. Each signup gets its own private organization.
+Remaining production-hardening items (email delivery and auth settings) are tracked separately. Each signup gets its own private organization.
