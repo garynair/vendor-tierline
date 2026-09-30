@@ -14,6 +14,12 @@ Vendor Tierline scores each vendor **engagement** (not just the vendor) against 
 
 Vendors can fill questionnaires through a token link without an account, or an internal user can complete them on the vendor's behalf.
 
+## Insights dashboard
+
+![Vendor Tierline insights dashboard: engagements, final risk tiers, and tiering pipeline](docs/dashboard.png)
+
+The Insights page shows the final tier mix, the tiering pipeline, monthly intake, the reviewer-override audit trail, and aging of open follow-ups. It reads from `dash_*` database views that respect each organization's row-level security. The screenshot uses fictional demo data.
+
 ## Status
 
 **v1.0** (23 Sep 2026). The two-stage flow from the [architecture](docs/architecture.md) is live: vendor token links, internal fill, scoring, reviewer confirm/override, tier-mapped follow-ups, a getting-started checklist, and dark mode. Schema changes live in `supabase/migrations/`.
