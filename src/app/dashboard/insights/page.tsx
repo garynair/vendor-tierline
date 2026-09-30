@@ -1,7 +1,41 @@
 // src/app/dashboard/insights/page.tsx
 // Vendor Tierline insights. Reads the dash_* views (RLS applies via security_invoker).
 // Uses the same getMembership() helper as src/app/dashboard/page.tsx.
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { getMembership } from "@/lib/membership";
+
+type RegisterRow = {
+  score: number | null;
+  was_overridden: boolean | null;
+  tiering_status: string | null;
+};
+type TierRow = { final_tier: string; assessments: number };
+type PipelineRow = { questionnaire_type: string; status: string; stage_order: number; assessments: number };
+type OverrideRow = {
+  vendor_name: string;
+  computed_tier: string;
+  final_tier: string;
+  direction: "raised" | "lowered";
+  override_reason: string | null;
+  reviewed_at: string | null;
+};
+type FollowupRow = {
+  vendor_name: string;
+  tier: string | null;
+  status: string;
+  sent_at: string;
+  days_open: number | null;
+  is_overdue: boolean;
+};
+type MonthlyRow = {
+  month: string;
+  new_engagements: number;
+  critical: number;
+  high: number;
+  medium: number;
+  low: number;
+  not_yet_scored: number;
+};
 
 export const dynamic = "force-dynamic";
 
@@ -38,13 +72,17 @@ function Bar({ label, value, max, color }: { label: string; value: number; max: 
 export default async function InsightsPage() {
   const { supabase } = await getMembership();
 
+  // The dash_* views are newer than database.types.ts, so query them through an
+  // untyped client and cast each result to the row types defined above.
+  const db = supabase as unknown as SupabaseClient;
+
   const [register, tiers, pipeline, overrides, aging, monthly] = await Promise.all([
-    supabase.from("dash_vendor_register").select("*"),
-    supabase.from("dash_tier_distribution").select("*"),
-    supabase.from("dash_pipeline").select("*").order("stage_order"),
-    supabase.from("dash_override_log").select("*").order("reviewed_at", { ascending: false }),
-    supabase.from("dash_followup_aging").select("*").not("days_open", "is", null).order("days_open", { ascending: false }),
-    supabase.from("dash_monthly_intake").select("*").order("month"),
+    db.from("dash_vendor_register").select("*").returns<RegisterRow[]>(),
+    db.from("dash_tier_distribution").select("*").returns<TierRow[]>(),
+    db.from("dash_pipeline").select("*").order("stage_order").returns<PipelineRow[]>(),
+    db.from("dash_override_log").select("*").order("reviewed_at", { ascending: false }).returns<OverrideRow[]>(),
+    db.from("dash_followup_aging").select("*").not("days_open", "is", null).order("days_open", { ascending: false }).returns<FollowupRow[]>(),
+    db.from("dash_monthly_intake").select("*").order("month").returns<MonthlyRow[]>(),
   ]);
 
   const reg = register.data ?? [];
