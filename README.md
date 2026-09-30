@@ -19,7 +19,7 @@ Vendors can fill questionnaires through a token link without an account, or an i
 Sign in at [vendor-tierline.vercel.app](https://vendor-tierline.vercel.app) with the read-only demo account:
 
 - **Email:** `demo@example.com`
-- **Password:** `REPLACE_WITH_DEMO_PASSWORD`
+- **Password:** `Password@123`
 
 The demo account has the read-only *learner* role in a sample organization with fictional vendors, scores, reviewer overrides, and follow-ups. It can browse everything, including the Insights dashboard, but row-level security blocks all changes.
 
