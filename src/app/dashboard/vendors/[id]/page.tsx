@@ -101,15 +101,36 @@ export default async function VendorPage({ params }: PageProps<"/dashboard/vendo
 
       {isStaff && (
         <section className="flex max-w-lg flex-col gap-3">
-          <h2 className="text-lg font-semibold">Add engagement</h2>
+          <div>
+            <h2 className="text-lg font-semibold">Add engagement</h2>
+            <p className="text-sm text-gray-600">
+              An engagement is one service or relationship with this vendor. Each engagement gets
+              its own tiering questionnaire, because the same vendor can carry very different risk
+              for different services.
+            </p>
+          </div>
           <ActionForm action={addEngagement.bind(null, vendor.id)} submitLabel="Add engagement">
             <label className="flex flex-col gap-1 text-sm font-medium">
-              Name
-              <input name="name" required className={inputClass} />
+              Service or engagement name
+              <input
+                name="name"
+                required
+                placeholder="e.g. Payroll processing, Cloud hosting, Customer support"
+                className={inputClass}
+              />
             </label>
             <label className="flex flex-col gap-1 text-sm font-medium">
-              Description
-              <textarea name="description" rows={2} className={inputClass} />
+              What the vendor does for us
+              <textarea
+                name="description"
+                rows={3}
+                placeholder="e.g. Runs bi-weekly payroll for all US employees; receives SSNs and bank details via SFTP; no access to our network."
+                className={inputClass}
+              />
+              <span className="text-xs font-normal text-gray-500">
+                Optional. Note the data it handles and the systems it can access, so reviewers have
+                context when confirming the tier.
+              </span>
             </label>
           </ActionForm>
         </section>

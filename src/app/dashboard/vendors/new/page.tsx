@@ -24,17 +24,26 @@ export default function NewVendorPage() {
           <input name="website" type="url" placeholder="https://" className={inputClass} />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
-          First engagement
+          First service or engagement
           <input
             name="engagement_name"
             required
-            placeholder="e.g. Payroll processing"
+            placeholder="e.g. Payroll processing, Cloud hosting, Customer support"
             className={inputClass}
           />
         </label>
         <label className="flex flex-col gap-1 text-sm font-medium">
           What the vendor does for us
-          <textarea name="engagement_description" rows={3} className={inputClass} />
+          <textarea
+            name="engagement_description"
+            rows={3}
+            placeholder="e.g. Runs bi-weekly payroll for all US employees; receives SSNs and bank details via SFTP; no access to our network."
+            className={inputClass}
+          />
+          <span className="text-xs font-normal text-gray-500">
+            Optional. Note the data it handles and the systems it can access, so reviewers have
+            context when confirming the tier.
+          </span>
         </label>
       </ActionForm>
     </div>
