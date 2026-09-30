@@ -4,6 +4,7 @@ import { engagementTierStatus, mostSevereTier } from "@/lib/engagement-tiers";
 import { formatDate, statusLabels } from "@/lib/labels";
 import { TierBadge } from "@/components/tier-badge";
 import { GettingStarted } from "@/components/getting-started";
+import { ReadOnlyAction } from "@/components/read-only-action";
 
 export default async function DashboardPage() {
   const { supabase, isStaff, isAdmin } = await getMembership();
@@ -77,10 +78,12 @@ export default async function DashboardPage() {
       <section className="flex flex-col gap-3">
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-semibold">Vendors</h1>
-          {isStaff && (
+          {isStaff ? (
             <Link href="/dashboard/vendors/new" className="rounded bg-black px-3 py-2 text-sm text-white">
               Add vendor
             </Link>
+          ) : (
+            <ReadOnlyAction label="Add vendor" />
           )}
         </div>
 

@@ -5,6 +5,7 @@ import { engagementTierStatus, mostSevereTier } from "@/lib/engagement-tiers";
 import { statusLabels } from "@/lib/labels";
 import { ActionForm } from "@/components/action-form";
 import { TierBadge } from "@/components/tier-badge";
+import { ReadOnlyAction } from "@/components/read-only-action";
 import { addEngagement, setEngagementActive } from "../actions";
 
 const inputClass = "rounded border border-gray-300 px-3 py-2 font-normal";
@@ -133,6 +134,15 @@ export default async function VendorPage({ params }: PageProps<"/dashboard/vendo
               </span>
             </label>
           </ActionForm>
+        </section>
+      )}
+
+      {!isStaff && (
+        <section className="flex max-w-lg flex-col gap-3">
+          <h2 className="text-lg font-semibold">Add engagement</h2>
+          <div>
+            <ReadOnlyAction label="Add engagement" />
+          </div>
         </section>
       )}
     </div>

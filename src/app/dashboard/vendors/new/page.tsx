@@ -1,9 +1,28 @@
+import Link from "next/link";
 import { ActionForm } from "@/components/action-form";
+import { getMembership } from "@/lib/membership";
 import { createVendor } from "../actions";
 
 const inputClass = "rounded border border-gray-300 px-3 py-2 font-normal";
 
-export default function NewVendorPage() {
+export default async function NewVendorPage() {
+  const { isStaff } = await getMembership();
+
+  if (!isStaff) {
+    return (
+      <div className="flex max-w-lg flex-col gap-4">
+        <h1 className="text-xl font-semibold">Add vendor</h1>
+        <p className="rounded border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+          This is a read-only demo account, so changes are turned off. Sign in as an admin or
+          practitioner to add or edit data.
+        </p>
+        <Link href="/dashboard" className="text-sm underline">
+          Back to vendors
+        </Link>
+      </div>
+    );
+  }
+
   return (
     <div className="flex max-w-lg flex-col gap-6">
       <div>
