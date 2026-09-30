@@ -41,3 +41,13 @@ npm run dev
 ```
 
 Open http://localhost:3000.
+
+## License
+
+Vendor Tierline is source-available under the [Business Source License 1.1](LICENSE).
+
+- **Allowed:** reading the code, running it locally, evaluation, learning, research, and testing.
+- **Not allowed without a commercial license:** production use, including offering it as a hosted service or using it to run a commercial vendor risk offering.
+- **Converts to open source:** on 2030-09-30, the code converts to the Apache License 2.0.
+
+For commercial licensing, contact [Girish Nair](https://github.com/garynair).
