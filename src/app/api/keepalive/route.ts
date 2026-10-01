@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 
 // Keeps the free-tier Supabase project from pausing after 7 days without
-// activity. Vercel Cron calls this route daily (see vercel.json). It runs one
-// tiny read through the Supabase REST API with the public key; row-level
-// security returns no rows to an anonymous caller, but the request still
-// counts as project activity. It reads nothing sensitive and writes nothing.
+// activity. Vercel Cron calls this route three times a day (see vercel.json).
+// It calls public.keepalive(), a function that only returns 1, through the
+// Supabase REST API with the public key. It touches no tables and writes
+// nothing.
 export const dynamic = "force-dynamic";
 
 export async function GET(request: Request) {
@@ -21,8 +21,10 @@ export async function GET(request: Request) {
     return NextResponse.json({ ok: false, error: "supabase env missing" }, { status: 500 });
   }
 
-  const res = await fetch(`${url}/rest/v1/risk_tiers?select=id&limit=1`, {
-    headers: { apikey: key },
+  const res = await fetch(`${url}/rest/v1/rpc/keepalive`, {
+    method: "POST",
+    headers: { apikey: key, "Content-Type": "application/json" },
+    body: "{}",
     cache: "no-store",
   });
 
