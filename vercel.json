@@ -1,0 +1,17 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "crons": [
+    {
+      "path": "/api/keepalive?run=1",
+      "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/keepalive?run=2",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/keepalive?run=3",
+      "schedule": "0 18 * * *"
+    }
+  ]
+}
