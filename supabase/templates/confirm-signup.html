@@ -1,0 +1,73 @@
+<!--
+  Supabase "Confirm signup" email template.
+  Paste into: Authentication -> Emails -> Templates -> Confirm signup.
+  Subject: Confirm your email for Vendor Tierline
+  Table layout and inline styles for email clients (Outlook, Gmail, Yahoo).
+  The logo is served from the app (public/email/logo-mark.png).
+-->
+<!DOCTYPE html>
+<html lang="en">
+  <body style="margin:0;padding:0;background-color:#f4f4f5;">
+    <div style="display:none;max-height:0;overflow:hidden;">
+      Confirm your email to finish setting up your Vendor Tierline workspace.
+    </div>
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f4f5;">
+      <tr>
+        <td align="center" style="padding:32px 16px;">
+          <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:520px;">
+            <tr>
+              <td style="padding:0 0 20px 0;">
+                <table role="presentation" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="vertical-align:middle;">
+                      <img src="{{ .SiteURL }}/email/logo-mark.png" width="40" height="40" alt="" style="display:block;border:0;border-radius:9px;" />
+                    </td>
+                    <td style="vertical-align:middle;padding-left:12px;font-family:Arial,Helvetica,sans-serif;font-size:18px;font-weight:bold;color:#18181b;">
+                      Vendor Tierline
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+            <tr>
+              <td style="background-color:#ffffff;border:1px solid #e4e4e7;border-radius:12px;padding:32px;font-family:Arial,Helvetica,sans-serif;color:#27272a;font-size:15px;line-height:1.6;">
+                <h1 style="margin:0 0 16px 0;font-size:20px;color:#18181b;">Confirm your email</h1>
+                <p style="margin:0 0 16px 0;">
+                  Thanks for creating a Vendor Tierline workspace. Vendor Tierline helps teams tier
+                  third-party vendors by risk and send the right due-diligence questionnaires.
+                </p>
+                <p style="margin:0 0 24px 0;">Confirm this is your email address to finish setting up your account:</p>
+                <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 24px 0;">
+                  <tr>
+                    <td style="background-color:#10b981;border-radius:8px;">
+                      <a href="{{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&type=email" style="display:inline-block;padding:12px 22px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">Confirm my email</a>
+                    </td>
+                  </tr>
+                </table>
+                <p style="margin:0 0 16px 0;font-size:14px;color:#52525b;">
+                  The link opens a page with a <strong>Confirm my email</strong> button. Click it to
+                  finish. The link works once and expires in 1 hour.
+                </p>
+                <p style="margin:0 0 8px 0;font-size:13px;color:#71717a;">If the button doesn't work, copy this address into your browser:</p>
+                <p style="margin:0 0 24px 0;font-size:12px;word-break:break-all;color:#71717a;">
+                  {{ .SiteURL }}/auth/confirm?token_hash={{ .TokenHash }}&amp;type=email
+                </p>
+                <hr style="border:0;border-top:1px solid #e4e4e7;margin:0 0 16px 0;" />
+                <p style="margin:0;font-size:13px;color:#71717a;">
+                  Didn't sign up? You can ignore this email. The account won't be activated.
+                  We'll never ask for your password by email.
+                </p>
+              </td>
+            </tr>
+            <tr>
+              <td style="padding:20px 8px 0 8px;font-family:Arial,Helvetica,sans-serif;font-size:12px;color:#a1a1aa;text-align:center;">
+                Sent to {{ .Email }} because this address was used to sign up at
+                <a href="{{ .SiteURL }}" style="color:#71717a;">{{ .SiteURL }}</a>.
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
