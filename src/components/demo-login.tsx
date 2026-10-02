@@ -28,9 +28,8 @@ export function DemoLogin({ compact = false }: { compact?: boolean }) {
           </>
         ) : (
           <>
-            <span className="font-medium text-emerald-300">Just looking?</span> Open a read-only demo
-            with sample vendors, risk tiers, reviewer overrides, and the Insights dashboard. No sign-up
-            needed.
+            <span className="font-medium text-emerald-300">Just looking?</span> Open the read-only demo:
+            sample vendors, risk tiers, and Insights. No sign-up needed.
           </>
         )}
       </p>
@@ -41,7 +40,6 @@ export function DemoLogin({ compact = false }: { compact?: boolean }) {
       <button type="submit" disabled={pending} className={authButtonClass}>
         {pending ? "Opening demo…" : "Explore the demo"}
       </button>
-      <p className="text-xs text-zinc-500">Read-only. Changes are turned off.</p>
     </form>
   );
 }

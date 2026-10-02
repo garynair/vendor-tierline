@@ -158,7 +158,7 @@ export function AuthShell({
             <LogoMark size="lg" />
           </div>
           <div className="flex flex-col gap-1.5">
-            <h1 className="text-2xl font-semibold text-zinc-50">{title}</h1>
+            <h1 className="text-2xl font-semibold text-zinc-50 lg:text-xl">{title}</h1>
             <p className="text-sm text-zinc-400">{subtitle}</p>
           </div>
           <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl shadow-black/30 lg:p-5">

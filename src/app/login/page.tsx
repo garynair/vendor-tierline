@@ -13,7 +13,7 @@ function LoginForm() {
   const next = useSearchParams().get("next") ?? "";
 
   return (
-    <form action={formAction} className="flex flex-col gap-4">
+    <form action={formAction} className="flex flex-col gap-4 lg:gap-3">
       <input type="hidden" name="next" value={next} />
       <AuthField label="Work email">
         <input type="email" name="email" autoComplete="email" required className={authInputClass} />
@@ -29,7 +29,7 @@ function LoginForm() {
       </AuthField>
       <Turnstile resetKey={state} />
       {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-      <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
+      <button type="submit" disabled={pending} className={authButtonClass}>
         {pending ? "Logging in…" : "Log in"}
       </button>
     </form>
