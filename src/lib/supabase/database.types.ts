@@ -629,7 +629,10 @@ export type Database = {
         }
         Returns: string
       }
-      create_sandbox_workspace: { Args: { p_name: string }; Returns: string }
+      create_sandbox_workspace: {
+        Args: { p_name: string; p_with_samples?: boolean }
+        Returns: string
+      }
       get_org_invite: {
         Args: { p_token: string }
         Returns: {
@@ -640,6 +643,7 @@ export type Database = {
         }[]
       }
       keepalive: { Args: never; Returns: number }
+      load_sample_data: { Args: { p_org: string }; Returns: number }
       org_members: {
         Args: { p_org: string }
         Returns: {

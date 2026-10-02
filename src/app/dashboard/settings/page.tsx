@@ -5,17 +5,20 @@ import { ActionForm } from "@/components/action-form";
 import { TierBadge } from "@/components/tier-badge";
 import { createTemplate, loadDefaultTemplates, setTierMapping, updateTier } from "./actions";
 import { SettingsTabs } from "./settings-tabs";
+import { LoadSampleData } from "../sample-data";
 
 const inputClass = "rounded border border-gray-300 px-2 py-1.5 font-normal";
 
 export default async function SettingsPage() {
   const { supabase, isAdmin } = await getMembership();
 
-  const [{ data: tiers }, { data: templates }, { data: questions }, { data: mappings }] = await Promise.all([
+  const [{ data: tiers }, { data: templates }, { data: questions }, { data: mappings }, { count: sampleVendorCount }] = await Promise.all([
     supabase.from("risk_tiers").select("id, name, rank, min_score").order("rank"),
     supabase.from("questionnaire_templates").select("id, name, type, description").order("type").order("name"),
     supabase.from("questionnaire_questions").select("template_id"),
     supabase.from("template_tier_mappings").select("tier_id, template_id"),
+    // Sample vendors use fictional .example websites.
+    supabase.from("vendors").select("id", { count: "exact", head: true }).like("website", "%.example"),
   ]);
 
   const questionCount = new Map<string, number>();
@@ -152,6 +155,23 @@ export default async function SettingsPage() {
           </ActionForm>
         )}
       </section>
+
+      {isAdmin && (
+        <section className="flex flex-col gap-3">
+          <div>
+            <h2 className="text-lg font-semibold">Sample data</h2>
+            <p className="text-sm text-gray-600">
+              27 fictional vendors (with .example websites) with assessments, reviewer overrides, and
+              follow-ups, for exploring the app.
+            </p>
+          </div>
+          {(sampleVendorCount ?? 0) > 0 ? (
+            <p className="text-sm text-gray-600">Sample data is loaded ({sampleVendorCount} sample vendors).</p>
+          ) : (
+            <LoadSampleData />
+          )}
+        </section>
+      )}
     </div>
   );
 }

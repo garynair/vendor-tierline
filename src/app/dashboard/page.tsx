@@ -5,6 +5,7 @@ import { formatDate, tierBadgeClass } from "@/lib/labels";
 import { roleDescriptions, roleLabels } from "@/lib/invites";
 import { GettingStarted } from "@/components/getting-started";
 import { ReadOnlyAction } from "@/components/read-only-action";
+import { LoadSampleData } from "./sample-data";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -111,6 +112,19 @@ export default async function HomePage() {
           )}
         </div>
       </div>
+
+      {isAdmin && (vendors ?? []).length === 0 && (
+        <section className="flex flex-col gap-3 rounded border border-dashed border-gray-300 p-4">
+          <div>
+            <h2 className="text-sm font-semibold">Want to explore first?</h2>
+            <p className="text-sm text-gray-600">
+              Load 27 fictional sample vendors with assessments, reviewer overrides, and follow-ups.
+              They sit alongside anything you add yourself.
+            </p>
+          </div>
+          <LoadSampleData />
+        </section>
+      )}
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <Stat label="Vendors" value={(vendors ?? []).length} href="/dashboard/vendors" />

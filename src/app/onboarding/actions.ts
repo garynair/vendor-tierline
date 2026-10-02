@@ -5,8 +5,9 @@ import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 import { PENDING_INVITE_COOKIE } from "@/lib/invites";
 
-// New accounts get a sandbox workspace: a private copy of the sample data
-// (vendors, assessments, tiers, questionnaires) with the user as admin.
+// New accounts get a sandbox workspace with the user as admin: risk tiers and
+// questionnaires always, plus the sample vendors and assessments unless they
+// chose to start empty (they can load the samples later from Home or Settings).
 export async function createOrganization(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
 
@@ -15,7 +16,8 @@ export async function createOrganization(_prevState: unknown, formData: FormData
     return { error: "Workspace name is required." };
   }
 
-  const { error } = await supabase.rpc("create_sandbox_workspace", { p_name: name });
+  const withSamples = formData.get("start") !== "empty";
+  const { error } = await supabase.rpc("create_sandbox_workspace", { p_name: name, p_with_samples: withSamples });
   if (error) {
     return { error: error.message };
   }

@@ -4,6 +4,7 @@ import { APP_VERSION } from "@/lib/version";
 import { LogoMark } from "@/components/logo";
 import { roleLabels } from "@/lib/invites";
 import { signOut } from "./actions";
+import { NavLinks } from "./nav-links";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
   const { orgName, role } = await getMembership();
@@ -25,26 +26,22 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
               {orgName} · {roleLabels[role]}
             </p>
           </div>
-          <nav className="flex gap-4 text-sm">
-            <Link href="/dashboard" className="hover:underline">
-              Home
-            </Link>
-            <Link href="/dashboard/vendors" className="hover:underline">
-              Vendors
-            </Link>
-            <Link href="/dashboard/insights" className="hover:underline">
-              Insights
-            </Link>
-            <Link href="/dashboard/settings" className="hover:underline">
-              Settings
-            </Link>
-          </nav>
         </div>
-        <form action={signOut}>
-          <button type="submit" className="text-sm underline">
-            Sign out
-          </button>
-        </form>
+        <nav
+          aria-label="Main"
+          className="flex flex-wrap items-center gap-1 rounded-lg border border-green-200 bg-green-50 p-1"
+        >
+          <NavLinks />
+          <span aria-hidden="true" className="mx-1 h-5 w-px bg-green-200" />
+          <form action={signOut}>
+            <button
+              type="submit"
+              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-700 transition hover:bg-green-100"
+            >
+              Sign out
+            </button>
+          </form>
+        </nav>
       </header>
       <main className="mx-auto max-w-4xl px-6 py-8">{children}</main>
     </div>

@@ -35,7 +35,7 @@ export default async function OnboardingPage() {
       subtitle={
         invite
           ? `You've been invited as ${invite.roleLabel}.`
-          : "We'll fill it with sample vendors, assessments, and risk tiers so you can try everything. You'll be its admin."
+          : "You'll be its admin. Start with sample data to explore, or empty to add your own vendors."
       }
     >
       <OnboardingForms invite={invite} />
