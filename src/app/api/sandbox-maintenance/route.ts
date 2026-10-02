@@ -13,7 +13,8 @@ export const dynamic = "force-dynamic";
 type DueSandbox = { org_id: string; org_name: string; emails: string[] | null; delete_after: string };
 
 const SENDER = "Vendor Tierline <no-reply@vendor.axionsec.com>";
-const APP_URL = "https://vendor-tierline.vercel.app";
+// Same domain as the sender, so links in the email match where it came from.
+const APP_URL = "https://vendor.axionsec.com";
 
 function reminderHtml(orgName: string, deleteAfter: string) {
   const safeName = orgName.replace(/[<>&"]/g, "");
