@@ -2,7 +2,7 @@
 
 import { useActionState } from "react";
 import { AuthNotice, authButtonClass } from "@/components/auth-shell";
-import { Turnstile, useTurnstile } from "@/components/turnstile";
+import { Turnstile, captchaButtonLabel, useTurnstile } from "@/components/turnstile";
 import { login } from "@/app/login/actions";
 
 // Public, read-only demo account (learner role). Safe to expose: row-level
@@ -36,10 +36,10 @@ export function DemoLogin({ compact = false }: { compact?: boolean }) {
       </p>
       <input type="hidden" name="email" value={DEMO_EMAIL} />
       <input type="hidden" name="password" value={DEMO_PASSWORD} />
-      <Turnstile resetKey={state} onToken={captcha.setToken} />
+      <Turnstile resetKey={state} onToken={captcha.setToken} onFailed={captcha.setFailed} />
       {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
       <button type="submit" disabled={pending || !captcha.ready} className={authButtonClass}>
-        {pending ? "Opening demo…" : captcha.ready ? "Explore the demo" : "Checking your browser…"}
+        {pending ? "Opening demo…" : captchaButtonLabel(captcha.status, "Explore the demo")}
       </button>
     </form>
   );

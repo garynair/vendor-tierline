@@ -11,7 +11,7 @@ export const PASSWORD_RULES = [
   { label: "A lowercase letter", test: (value: string) => /[a-z]/.test(value) },
   { label: "An uppercase letter", test: (value: string) => /[A-Z]/.test(value) },
   { label: "A number", test: (value: string) => /\d/.test(value) },
-  { label: "A symbol, such as ! @ # $", test: (value: string) => SUPABASE_SYMBOLS.test(value) },
+  { label: "A symbol (!@#$…)", test: (value: string) => SUPABASE_SYMBOLS.test(value) },
 ];
 
 export function passwordProblems(value: string): string[] {

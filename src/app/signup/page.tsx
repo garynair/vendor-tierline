@@ -4,7 +4,7 @@ import { useActionState, useState } from "react";
 import Link from "next/link";
 import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
 import { DemoLogin } from "@/components/demo-login";
-import { Turnstile, useTurnstile } from "@/components/turnstile";
+import { Turnstile, captchaButtonLabel, useTurnstile } from "@/components/turnstile";
 import { PASSWORD_RULES } from "@/lib/password-rules";
 import { signup } from "./actions";
 
@@ -55,7 +55,7 @@ export default function SignupPage() {
               {PASSWORD_RULES.map((rule) => {
                 const met = rule.test(password);
                 return (
-                  <li key={rule.label} className={met ? "text-emerald-400" : "text-zinc-500"}>
+                  <li key={rule.label} className={`whitespace-nowrap ${met ? "text-emerald-400" : "text-zinc-500"}`}>
                     <span aria-hidden="true">{met ? "✓" : "○"}</span> {rule.label}
                     <span className="sr-only">{met ? " (done)" : " (missing)"}</span>
                   </li>
@@ -75,14 +75,14 @@ export default function SignupPage() {
             />
             {mismatch && <span className="text-xs font-normal text-red-400">Passwords don&apos;t match yet.</span>}
           </AuthField>
-          <Turnstile resetKey={state} onToken={captcha.setToken} />
+          <Turnstile resetKey={state} onToken={captcha.setToken} onFailed={captcha.setFailed} />
           {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
           <button
             type="submit"
             disabled={pending || !captcha.ready || !rulesMet || mismatch || !confirm}
             className={`${authButtonClass} mt-2`}
           >
-            {pending ? "Creating workspace…" : captcha.ready ? "Create workspace" : "Checking your browser…"}
+            {pending ? "Creating workspace…" : captchaButtonLabel(captcha.status, "Create workspace")}
           </button>
           <p className="text-xs text-zinc-500">
             We&apos;ll email a link to confirm your address. Workspaces with no sign-in for 30 days
