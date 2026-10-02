@@ -18,6 +18,7 @@ export function DemoLogin({ compact = false }: { compact?: boolean }) {
 
   return (
     <form
+      onSubmit={captcha.onSubmit}
       action={formAction}
       className="mb-5 flex flex-col gap-3 rounded-lg border border-emerald-800 bg-emerald-950/40 p-4"
     >
@@ -38,8 +39,8 @@ export function DemoLogin({ compact = false }: { compact?: boolean }) {
       <input type="hidden" name="password" value={DEMO_PASSWORD} />
       <Turnstile resetKey={state} onToken={captcha.setToken} onFailed={captcha.setFailed} />
       {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-      <button type="submit" disabled={pending || !captcha.ready} className={authButtonClass}>
-        {pending ? "Opening demo…" : captchaButtonLabel(captcha.status, "Explore the demo")}
+      <button type="submit" disabled={pending || captcha.queued || captcha.status === "failed"} className={authButtonClass}>
+        {pending ? "Opening demo…" : captchaButtonLabel(captcha, "Explore the demo", "Opening demo…")}
       </button>
     </form>
   );

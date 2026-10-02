@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 // Cloudflare Turnstile bot check. Supabase Auth verifies the token server-side
 // (Authentication -> Attack Protection), so the app only passes it along.
@@ -45,19 +45,59 @@ function loadTurnstile(): Promise<void> {
 
 export type CaptchaStatus = "checking" | "ready" | "failed";
 
-// Tracks whether the form has a fresh Turnstile token. Forms disable their
-// submit button until it's ready, because the check runs in the background and
-// runs again after every submit (tokens are single-use).
+// Tracks the form's Turnstile token. The check runs in the background (about
+// 1-3 seconds) and again after every submit, since tokens are single-use.
+// Buttons stay clickable: a click that lands before the check finishes is
+// queued and the form submits itself as soon as the token arrives.
+// Usage: <form onSubmit={captcha.onSubmit} ...> and pass captcha.setToken /
+// captcha.setFailed to <Turnstile>.
 export function useTurnstile() {
-  const [token, setToken] = useState<string | null>(null);
-  const [failed, setFailed] = useState(false);
+  const [token, setTokenState] = useState<string | null>(null);
+  const [failed, setFailedState] = useState(false);
+  const [queued, setQueued] = useState(false);
+  // Read only in event handlers and Turnstile callbacks, never during render.
+  const tokenRef = useRef<string | null>(null);
+  const queuedFormRef = useRef<HTMLFormElement | null>(null);
   const status: CaptchaStatus = !TURNSTILE_SITE_KEY || token ? "ready" : failed ? "failed" : "checking";
-  return { token, setToken, setFailed, status, ready: status === "ready" };
+
+  const setToken = useCallback((value: string | null) => {
+    tokenRef.current = value;
+    setTokenState(value);
+    const form = queuedFormRef.current;
+    if (value && form) {
+      queuedFormRef.current = null;
+      setQueued(false);
+      form.requestSubmit();
+    }
+  }, []);
+
+  const setFailed = useCallback((value: boolean) => {
+    setFailedState(value);
+    if (value) {
+      queuedFormRef.current = null;
+      setQueued(false);
+    }
+  }, []);
+
+  const onSubmit = useCallback((event: React.FormEvent<HTMLFormElement>) => {
+    if (!TURNSTILE_SITE_KEY || tokenRef.current) return;
+    event.preventDefault();
+    queuedFormRef.current = event.currentTarget;
+    setQueued(true);
+  }, []);
+
+  return { setToken, setFailed, onSubmit, status, queued };
 }
 
-export function captchaButtonLabel(status: CaptchaStatus, label: string) {
-  if (status === "checking") return "Checking your browser…";
-  if (status === "failed") return "Bot check failed. Refresh the page";
+// Label for the submit button. While a click is queued it reads like the
+// request is already under way.
+export function captchaButtonLabel(
+  captcha: { status: CaptchaStatus; queued: boolean },
+  label: string,
+  busyLabel: string
+) {
+  if (captcha.queued) return busyLabel;
+  if (captcha.status === "failed") return "Bot check failed. Refresh the page";
   return label;
 }
 

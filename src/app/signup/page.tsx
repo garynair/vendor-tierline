@@ -35,7 +35,7 @@ export default function SignupPage() {
       {state?.message ? (
         <AuthNotice tone="success">{state.message}</AuthNotice>
       ) : (
-        <form action={formAction} className="flex flex-col gap-4">
+        <form onSubmit={captcha.onSubmit} action={formAction} className="flex flex-col gap-4">
           <AuthField label="Work email">
             <input type="email" name="email" autoComplete="email" required className={authInputClass} />
           </AuthField>
@@ -79,10 +79,10 @@ export default function SignupPage() {
           {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
           <button
             type="submit"
-            disabled={pending || !captcha.ready || !rulesMet || mismatch || !confirm}
+            disabled={pending || captcha.queued || captcha.status === "failed" || !rulesMet || mismatch || !confirm}
             className={`${authButtonClass} mt-2`}
           >
-            {pending ? "Creating workspace…" : captchaButtonLabel(captcha.status, "Create workspace")}
+            {pending ? "Creating workspace…" : captchaButtonLabel(captcha, "Create workspace", "Creating workspace…")}
           </button>
           <p className="text-xs text-zinc-500">
             We&apos;ll email a link to confirm your address. Workspaces with no sign-in for 30 days

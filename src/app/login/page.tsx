@@ -14,7 +14,7 @@ function LoginForm() {
   const captcha = useTurnstile();
 
   return (
-    <form action={formAction} className="flex flex-col gap-4 lg:gap-3">
+    <form onSubmit={captcha.onSubmit} action={formAction} className="flex flex-col gap-4 lg:gap-3">
       <input type="hidden" name="next" value={next} />
       <AuthField label="Work email">
         <input type="email" name="email" autoComplete="email" required className={authInputClass} />
@@ -30,8 +30,8 @@ function LoginForm() {
       </AuthField>
       <Turnstile resetKey={state} onToken={captcha.setToken} onFailed={captcha.setFailed} />
       {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-      <button type="submit" disabled={pending || !captcha.ready} className={authButtonClass}>
-        {pending ? "Logging in…" : captchaButtonLabel(captcha.status, "Log in")}
+      <button type="submit" disabled={pending || captcha.queued || captcha.status === "failed"} className={authButtonClass}>
+        {pending ? "Logging in…" : captchaButtonLabel(captcha, "Log in", "Logging in…")}
       </button>
     </form>
   );
