@@ -1,14 +1,21 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 import Link from "next/link";
 import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
 import { DemoLogin } from "@/components/demo-login";
-import { Turnstile } from "@/components/turnstile";
+import { Turnstile, useTurnstile } from "@/components/turnstile";
+import { PASSWORD_RULES } from "@/lib/password-rules";
 import { signup } from "./actions";
 
 export default function SignupPage() {
   const [state, formAction, pending] = useActionState(signup, undefined);
+  const captcha = useTurnstile();
+  const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
+
+  const rulesMet = PASSWORD_RULES.every((rule) => rule.test(password));
+  const mismatch = confirm.length > 0 && confirm !== password;
 
   return (
     <AuthShell
@@ -39,11 +46,22 @@ export default function SignupPage() {
               autoComplete="new-password"
               required
               minLength={10}
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              aria-describedby="password-rules"
               className={authInputClass}
             />
-            <span className="text-xs font-normal text-zinc-500">
-              At least 10 characters, with letters and numbers.
-            </span>
+            <ul id="password-rules" className="grid grid-cols-2 gap-x-3 gap-y-0.5 text-xs font-normal">
+              {PASSWORD_RULES.map((rule) => {
+                const met = rule.test(password);
+                return (
+                  <li key={rule.label} className={met ? "text-emerald-400" : "text-zinc-500"}>
+                    <span aria-hidden="true">{met ? "✓" : "○"}</span> {rule.label}
+                    <span className="sr-only">{met ? " (done)" : " (missing)"}</span>
+                  </li>
+                );
+              })}
+            </ul>
           </AuthField>
           <AuthField label="Confirm password">
             <input
@@ -51,14 +69,20 @@ export default function SignupPage() {
               name="confirm_password"
               autoComplete="new-password"
               required
-              minLength={10}
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
               className={authInputClass}
             />
+            {mismatch && <span className="text-xs font-normal text-red-400">Passwords don&apos;t match yet.</span>}
           </AuthField>
-          <Turnstile resetKey={state} />
+          <Turnstile resetKey={state} onToken={captcha.setToken} />
           {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-          <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
-            {pending ? "Creating workspace…" : "Create workspace"}
+          <button
+            type="submit"
+            disabled={pending || !captcha.ready || !rulesMet || mismatch || !confirm}
+            className={`${authButtonClass} mt-2`}
+          >
+            {pending ? "Creating workspace…" : captcha.ready ? "Create workspace" : "Checking your browser…"}
           </button>
           <p className="text-xs text-zinc-500">
             We&apos;ll email a link to confirm your address. Workspaces with no sign-in for 30 days

@@ -5,12 +5,13 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
 import { DemoLogin } from "@/components/demo-login";
-import { Turnstile } from "@/components/turnstile";
+import { Turnstile, useTurnstile } from "@/components/turnstile";
 import { login } from "./actions";
 
 function LoginForm() {
   const [state, formAction, pending] = useActionState(login, undefined);
   const next = useSearchParams().get("next") ?? "";
+  const captcha = useTurnstile();
 
   return (
     <form action={formAction} className="flex flex-col gap-4 lg:gap-3">
@@ -27,10 +28,10 @@ function LoginForm() {
           className={authInputClass}
         />
       </AuthField>
-      <Turnstile resetKey={state} />
+      <Turnstile resetKey={state} onToken={captcha.setToken} />
       {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-      <button type="submit" disabled={pending} className={authButtonClass}>
-        {pending ? "Logging in…" : "Log in"}
+      <button type="submit" disabled={pending || !captcha.ready} className={authButtonClass}>
+        {pending ? "Logging in…" : captcha.ready ? "Log in" : "Checking your browser…"}
       </button>
     </form>
   );

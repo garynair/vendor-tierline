@@ -2,7 +2,8 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { captchaToken } from "@/lib/captcha";
+import { captchaToken, friendlyAuthError } from "@/lib/captcha";
+import { passwordProblems } from "@/lib/password-rules";
 
 export async function signup(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
@@ -12,6 +13,10 @@ export async function signup(_prevState: unknown, formData: FormData) {
   if (password !== String(formData.get("confirm_password") ?? "")) {
     return { error: "The passwords don't match. Type the same password in both fields." };
   }
+  const problems = passwordProblems(password);
+  if (problems.length > 0) {
+    return { error: `Your password still needs: ${problems.join(", ")}.` };
+  }
 
   const { data, error } = await supabase.auth.signUp({
     email,
@@ -20,7 +25,7 @@ export async function signup(_prevState: unknown, formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: friendlyAuthError(error.message) };
   }
 
   // With email confirmation on, there's no session until the user clicks

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import Script from "next/script";
 
 // Cloudflare Turnstile bot check. Supabase Auth verifies the token server-side
@@ -21,10 +21,25 @@ declare global {
   }
 }
 
+// Tracks whether the form has a fresh Turnstile token. Forms disable their
+// submit button until `ready`, because the check runs in the background and
+// takes a moment (and runs again after every submit, since tokens are
+// single-use).
+export function useTurnstile() {
+  const [token, setToken] = useState<string | null>(null);
+  return { token, setToken, ready: !TURNSTILE_SITE_KEY || Boolean(token) };
+}
+
 // Renders inside a <form>; Turnstile adds a hidden "cf-turnstile-response"
-// input that the server action reads. Change resetKey after each submit,
-// because a token can be used only once.
-export function Turnstile({ resetKey }: { resetKey?: unknown }) {
+// input that the server action reads. Change resetKey after each submit.
+// onToken should be a stable setter (useTurnstile's setToken).
+export function Turnstile({
+  resetKey,
+  onToken,
+}: {
+  resetKey?: unknown;
+  onToken: (token: string | null) => void;
+}) {
   const containerRef = useRef<HTMLDivElement>(null);
   const widgetIdRef = useRef<string | null>(null);
 
@@ -34,6 +49,9 @@ export function Turnstile({ resetKey }: { resetKey?: unknown }) {
       sitekey: TURNSTILE_SITE_KEY,
       theme: "dark",
       appearance: "interaction-only",
+      callback: (token: string) => onToken(token),
+      "expired-callback": () => onToken(null),
+      "error-callback": () => onToken(null),
     });
   };
 
@@ -47,6 +65,7 @@ export function Turnstile({ resetKey }: { resetKey?: unknown }) {
 
   useEffect(() => {
     if (resetKey !== undefined && widgetIdRef.current && window.turnstile) {
+      onToken(null);
       window.turnstile.reset(widgetIdRef.current);
     }
   }, [resetKey]);

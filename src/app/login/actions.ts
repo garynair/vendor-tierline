@@ -2,7 +2,7 @@
 
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { captchaToken } from "@/lib/captcha";
+import { captchaToken, friendlyAuthError } from "@/lib/captcha";
 
 export async function login(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
@@ -14,7 +14,7 @@ export async function login(_prevState: unknown, formData: FormData) {
   });
 
   if (error) {
-    return { error: error.message };
+    return { error: friendlyAuthError(error.message) };
   }
 
   // An invite link opened before signing in comes back here as ?next=/join/...
