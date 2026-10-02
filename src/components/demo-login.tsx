@@ -18,7 +18,7 @@ export function DemoLogin({ compact = false }: { compact?: boolean }) {
   return (
     <form
       action={formAction}
-      className="mb-6 flex flex-col gap-3 rounded-lg border border-emerald-800 bg-emerald-950/40 p-4"
+      className="mb-5 flex flex-col gap-3 rounded-lg border border-emerald-800 bg-emerald-950/40 p-4"
     >
       <p className="text-sm text-zinc-300">
         {compact ? (

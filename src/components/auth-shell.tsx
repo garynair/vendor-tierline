@@ -3,7 +3,7 @@ import { LogoMark } from "@/components/logo";
 
 // Shared layout for the signed-out screens (login, signup, onboarding).
 // Always dark, whatever the OS theme. It sticks to palettes that globals.css
-// doesn't remap for dark mode (zinc, emerald, rose, amber-300/400, orange-300/500,
+// doesn't remap for dark mode (zinc, emerald, rose, yellow-300/400, orange-300/500,
 // red-400/500/900/950), so it renders the same in both schemes.
 
 export const authInputClass =
@@ -30,7 +30,7 @@ const previewRows = [
 const previewTierClass: Record<string, { badge: string; bar: string }> = {
   Critical: { badge: "bg-rose-500/15 text-rose-300 ring-rose-500/30", bar: "bg-rose-500" },
   High: { badge: "bg-orange-500/15 text-orange-300 ring-orange-500/30", bar: "bg-orange-500" },
-  Medium: { badge: "bg-amber-400/15 text-amber-300 ring-amber-400/30", bar: "bg-amber-400" },
+  Medium: { badge: "bg-yellow-400/15 text-yellow-300 ring-yellow-400/30", bar: "bg-yellow-400" },
   Low: { badge: "bg-emerald-500/15 text-emerald-300 ring-emerald-500/30", bar: "bg-emerald-500" },
 };
 
@@ -44,7 +44,7 @@ function ProductPreview() {
           <span className="h-2.5 w-2.5 rounded-full bg-zinc-700" />
           <span className="ml-2 text-xs font-medium text-zinc-400">Vendor overview</span>
         </div>
-        <span className="rounded-full bg-amber-400/15 px-2 py-0.5 text-[10px] font-medium text-amber-300 ring-1 ring-amber-400/30">
+        <span className="rounded-full bg-yellow-400/15 px-2 py-0.5 text-[10px] font-medium text-yellow-300 ring-1 ring-yellow-400/30">
           2 awaiting review
         </span>
       </div>
@@ -149,9 +149,11 @@ export function AuthShell({
         </div>
       </aside>
 
-      <main className="relative flex flex-1 items-center justify-center px-6 py-12 lg:px-8">
+      {/* On desktop the form starts at the top, level with the left panel's
+          logo, so the footer link (create a workspace) stays above the fold. */}
+      <main className="relative flex flex-1 items-center justify-center px-6 py-12 lg:items-start lg:px-8 lg:py-8 [@media(min-height:800px)]:lg:py-10">
         <div aria-hidden="true" className="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-500/5 blur-3xl" />
-        <div className="relative flex w-full max-w-sm flex-col gap-8 lg:max-w-[21rem]">
+        <div className="relative flex w-full max-w-sm flex-col gap-8 lg:max-w-[21rem] lg:gap-5">
           <div className="lg:hidden">
             <LogoMark size="lg" />
           </div>
@@ -159,7 +161,7 @@ export function AuthShell({
             <h1 className="text-2xl font-semibold text-zinc-50">{title}</h1>
             <p className="text-sm text-zinc-400">{subtitle}</p>
           </div>
-          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl shadow-black/30">
+          <div className="rounded-xl border border-zinc-800 bg-zinc-900/40 p-6 shadow-xl shadow-black/30 lg:p-5">
             {children}
           </div>
           {footer && <div className="text-sm text-zinc-400">{footer}</div>}
