@@ -60,7 +60,7 @@ function ProductPreview() {
                 <p className="truncate text-sm font-medium text-zinc-100">{row.vendor}</p>
                 <p className="truncate text-xs text-zinc-500">{row.engagement}</p>
               </div>
-              <div className="hidden w-24 xl:block">
+              <div className="hidden w-24 lg:block xl:w-28">
                 <div className="h-1.5 overflow-hidden rounded-full bg-zinc-800">
                   <div className={`h-full rounded-full ${tierClass.bar}`} style={{ width: `${row.score * 100}%` }} />
                 </div>
@@ -90,7 +90,7 @@ export function AuthShell({
 }) {
   return (
     <div className="flex min-h-screen bg-zinc-950 text-zinc-100 [color-scheme:dark]">
-      <aside className="sticky top-0 hidden h-screen w-[55%] overflow-hidden border-r border-zinc-800 lg:block">
+      <aside className="sticky top-0 hidden h-screen w-[60%] overflow-hidden border-r border-zinc-800 lg:block">
         {/* faint grid + glow */}
         <div
           aria-hidden="true"
@@ -104,7 +104,7 @@ export function AuthShell({
           <div className="relative flex min-h-full flex-col justify-between gap-6 px-10 py-8 xl:px-14 [@media(min-height:800px)]:py-10">
             <LogoMark size="lg" />
 
-            <div className="flex max-w-xl flex-col gap-6">
+            <div className="flex max-w-2xl flex-col gap-6">
               <div className="flex flex-col gap-3">
                 <p className="text-xs font-semibold uppercase tracking-widest text-emerald-400">
                   Third-party risk management
@@ -149,9 +149,9 @@ export function AuthShell({
         </div>
       </aside>
 
-      <main className="relative flex flex-1 items-center justify-center px-6 py-12">
+      <main className="relative flex flex-1 items-center justify-center px-6 py-12 lg:px-8">
         <div aria-hidden="true" className="absolute right-0 top-0 h-72 w-72 rounded-full bg-emerald-500/5 blur-3xl" />
-        <div className="relative flex w-full max-w-sm flex-col gap-8">
+        <div className="relative flex w-full max-w-sm flex-col gap-8 lg:max-w-[21rem]">
           <div className="lg:hidden">
             <LogoMark size="lg" />
           </div>
