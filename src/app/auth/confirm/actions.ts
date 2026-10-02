@@ -18,9 +18,12 @@ export async function confirmEmail(_prev: unknown, formData: FormData) {
   const supabase = await createClient();
   const { error } = await supabase.auth.verifyOtp({ type, token_hash: tokenHash });
   if (error) {
+    console.error("verifyOtp failed", { code: error.code, status: error.status, message: error.message, type });
+    const expired = error.code === "otp_expired" || /expired|invalid/i.test(error.message);
     return {
-      error:
-        "That link has expired or was already used. If you already confirmed, log in. Otherwise, sign up again to get a new link.",
+      error: expired
+        ? "That link has expired or was already used. If you already confirmed, log in. Otherwise, sign up again to get a new link."
+        : `We couldn't confirm your email (${error.code ?? error.status ?? "error"}). Try the link again, or sign up again to get a new one.`,
     };
   }
 
