@@ -1,54 +1,42 @@
 "use server";
 
-import { randomUUID } from "crypto";
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
-import { seedDefaultTemplates } from "@/lib/default-templates";
+import { PENDING_INVITE_COOKIE } from "@/lib/invites";
 
+// New accounts get a sandbox workspace: a private copy of the sample data
+// (vendors, assessments, tiers, questionnaires) with the user as admin.
 export async function createOrganization(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    return { error: "You must be logged in." };
-  }
-
-  const name = String(formData.get("name")).trim();
+  const name = String(formData.get("name") ?? "").trim();
   if (!name) {
-    return { error: "Organization name is required." };
+    return { error: "Workspace name is required." };
   }
 
-  const slug = name
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "");
-
-  const orgId = randomUUID();
-
-  const { error: orgError } = await supabase
-    .from("organizations")
-    .insert({ id: orgId, name, slug: `${slug}-${user.id.slice(0, 8)}` });
-
-  if (orgError) {
-    return { error: orgError.message };
+  const { error } = await supabase.rpc("create_sandbox_workspace", { p_name: name });
+  if (error) {
+    return { error: error.message };
   }
 
-  const { error: membershipError } = await supabase
-    .from("memberships")
-    .insert({ organization_id: orgId, user_id: user.id, role: "admin" });
+  redirect("/dashboard");
+}
 
-  if (membershipError) {
-    return { error: membershipError.message };
+// Accepts the teammate invite remembered from /join/[token].
+export async function acceptPendingInvite() {
+  const supabase = await createClient();
+  const cookieStore = await cookies();
+  const token = cookieStore.get(PENDING_INVITE_COOKIE)?.value;
+  if (!token) {
+    return { error: "No pending invite found. Open the invite link again." };
   }
 
-  // Risk tiers are seeded by a database trigger; questionnaires start from
-  // the defaults. A failure here isn't fatal: Settings offers to load them.
-  try {
-    await seedDefaultTemplates(supabase, orgId);
-  } catch {}
+  const { error } = await supabase.rpc("accept_org_invite", { p_token: token });
+  cookieStore.delete(PENDING_INVITE_COOKIE);
+  if (error) {
+    return { error: error.message };
+  }
 
   redirect("/dashboard");
 }

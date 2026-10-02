@@ -4,6 +4,7 @@ import { typeLabels } from "@/lib/labels";
 import { ActionForm } from "@/components/action-form";
 import { TierBadge } from "@/components/tier-badge";
 import { createTemplate, loadDefaultTemplates, setTierMapping, updateTier } from "./actions";
+import { SettingsTabs } from "./settings-tabs";
 
 const inputClass = "rounded border border-gray-300 px-2 py-1.5 font-normal";
 
@@ -27,8 +28,9 @@ export default async function SettingsPage() {
 
   return (
     <div className="flex flex-col gap-10">
-      <div>
+      <div className="flex flex-col gap-4">
         <h1 className="text-xl font-semibold">Settings</h1>
+        <SettingsTabs active="program" />
         {!isAdmin && <p className="text-sm text-gray-600">Only admins can change these settings.</p>}
       </div>
 

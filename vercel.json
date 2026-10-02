@@ -12,6 +12,10 @@
     {
       "path": "/api/keepalive?run=3",
       "schedule": "0 18 * * *"
+    },
+    {
+      "path": "/api/sandbox-maintenance",
+      "schedule": "0 14 * * *"
     }
   ]
 }

@@ -1,30 +1,44 @@
-"use client";
+import { cookies } from "next/headers";
+import { redirect } from "next/navigation";
+import { createClient } from "@/lib/supabase/server";
+import { PENDING_INVITE_COOKIE, roleLabels } from "@/lib/invites";
+import { AuthShell } from "@/components/auth-shell";
+import { OnboardingForms } from "./onboarding-forms";
 
-import { useActionState } from "react";
-import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
-import { createOrganization } from "./actions";
+export default async function OnboardingPage() {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+  if (!user) redirect("/login");
 
-export default function OnboardingPage() {
-  const [state, formAction, pending] = useActionState(createOrganization, undefined);
+  const { count } = await supabase
+    .from("memberships")
+    .select("id", { count: "exact", head: true })
+    .eq("user_id", user.id);
+  if ((count ?? 0) > 0) redirect("/dashboard");
+
+  // A teammate invite opened before signing up takes priority.
+  const token = (await cookies()).get(PENDING_INVITE_COOKIE)?.value;
+  let invite: { organizationName: string; roleLabel: string } | null = null;
+  if (token) {
+    const { data } = await supabase.rpc("get_org_invite", { p_token: token });
+    const row = data?.[0];
+    if (row?.status === "valid") {
+      invite = { organizationName: row.organization_name, roleLabel: roleLabels[row.role] };
+    }
+  }
 
   return (
     <AuthShell
-      title="Name your organization"
-      subtitle="This is where your team tiers vendors. You'll be its admin."
+      title={invite ? `Join ${invite.organizationName}` : "Name your workspace"}
+      subtitle={
+        invite
+          ? `You've been invited as ${invite.roleLabel}.`
+          : "We'll fill it with sample vendors, assessments, and risk tiers so you can try everything. You'll be its admin."
+      }
     >
-      <form action={formAction} className="flex flex-col gap-4">
-        <AuthField label="Organization name">
-          <input type="text" name="name" placeholder="e.g. Acme Corp" required className={authInputClass} />
-        </AuthField>
-        {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-        <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
-          {pending ? "Setting up…" : "Create organization"}
-        </button>
-        <p className="text-xs text-zinc-500">
-          We&apos;ll add default risk tiers and questionnaires so you can tier your first vendor
-          right away.
-        </p>
-      </form>
+      <OnboardingForms invite={invite} />
     </AuthShell>
   );
 }

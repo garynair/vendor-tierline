@@ -33,14 +33,18 @@ export async function updateSession(request: NextRequest) {
   const { pathname } = request.nextUrl;
   // Vendors open /assess/[token] without an account; the token is their auth.
   // /auth/* handles email confirmation links before a session exists.
-  // /api/keepalive is called by Vercel Cron to keep the Supabase project awake.
+  // /join/* shows a teammate invite before the visitor has an account.
+  // /api/keepalive and /api/sandbox-maintenance are Vercel Cron jobs; they
+  // check CRON_SECRET themselves.
   const isPublicRoute =
     pathname === "/" ||
     pathname.startsWith("/login") ||
     pathname.startsWith("/signup") ||
     pathname.startsWith("/assess/") ||
     pathname.startsWith("/auth/") ||
+    pathname.startsWith("/join/") ||
     pathname === "/api/keepalive" ||
+    pathname === "/api/sandbox-maintenance" ||
     pathname === "/robots.txt";
 
   if (!user && !isPublicRoute) {

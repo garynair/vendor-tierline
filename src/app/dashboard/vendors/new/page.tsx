@@ -16,7 +16,7 @@ export default async function NewVendorPage() {
           This is a read-only demo account, so changes are turned off. Sign in as an admin or
           practitioner to add or edit data.
         </p>
-        <Link href="/dashboard" className="text-sm underline">
+        <Link href="/dashboard/vendors" className="text-sm underline">
           Back to vendors
         </Link>
       </div>

@@ -1,25 +1,54 @@
 "use client";
 
-import { useActionState } from "react";
+import { Suspense, useActionState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { AuthField, AuthNotice, AuthShell, authButtonClass, authInputClass } from "@/components/auth-shell";
 import { DemoLogin } from "@/components/demo-login";
+import { Turnstile } from "@/components/turnstile";
 import { login } from "./actions";
 
-export default function LoginPage() {
+function LoginForm() {
   const [state, formAction, pending] = useActionState(login, undefined);
+  const next = useSearchParams().get("next") ?? "";
 
+  return (
+    <form action={formAction} className="flex flex-col gap-4">
+      <input type="hidden" name="next" value={next} />
+      <AuthField label="Work email">
+        <input type="email" name="email" autoComplete="email" required className={authInputClass} />
+      </AuthField>
+      <AuthField label="Password">
+        <input
+          type="password"
+          name="password"
+          autoComplete="current-password"
+          required
+          className={authInputClass}
+        />
+      </AuthField>
+      <Turnstile resetKey={state} />
+      {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
+      <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
+        {pending ? "Logging in…" : "Log in"}
+      </button>
+    </form>
+  );
+}
+
+export default function LoginPage() {
   return (
     <AuthShell
       title="Welcome back"
-      subtitle="Log in to review tiers, send questionnaires, and track due diligence."
+      subtitle="Log in to your workspace, or try the demo below."
       footer={
         <div className="flex flex-col gap-4">
           <p>
-            New to Vendor Tierline?{" "}
+            Want to try it hands-on?{" "}
             <Link href="/signup" className="font-medium text-emerald-400 hover:text-emerald-300">
-              Create a workspace
+              Create your own workspace
             </Link>
+            , pre-loaded with sample data and full access.
           </p>
           <p className="border-t border-zinc-800 pt-4 text-xs text-zinc-500">
             Answering a questionnaire for a customer? You don&apos;t need an account. Use the
@@ -29,25 +58,9 @@ export default function LoginPage() {
       }
     >
       <DemoLogin />
-
-      <form action={formAction} className="flex flex-col gap-4">
-        <AuthField label="Work email">
-          <input type="email" name="email" autoComplete="email" required className={authInputClass} />
-        </AuthField>
-        <AuthField label="Password">
-          <input
-            type="password"
-            name="password"
-            autoComplete="current-password"
-            required
-            className={authInputClass}
-          />
-        </AuthField>
-        {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
-        <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
-          {pending ? "Logging in…" : "Log in"}
-        </button>
-      </form>
+      <Suspense>
+        <LoginForm />
+      </Suspense>
     </AuthShell>
   );
 }

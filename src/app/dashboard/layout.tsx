@@ -2,6 +2,7 @@ import Link from "next/link";
 import { getMembership } from "@/lib/membership";
 import { APP_VERSION } from "@/lib/version";
 import { LogoMark } from "@/components/logo";
+import { roleLabels } from "@/lib/invites";
 import { signOut } from "./actions";
 
 export default async function DashboardLayout({ children }: LayoutProps<"/dashboard">) {
@@ -21,11 +22,14 @@ export default async function DashboardLayout({ children }: LayoutProps<"/dashbo
               </span>
             </div>
             <p className="ml-11 text-xs text-gray-500">
-              {orgName} · {role}
+              {orgName} · {roleLabels[role]}
             </p>
           </div>
           <nav className="flex gap-4 text-sm">
             <Link href="/dashboard" className="hover:underline">
+              Home
+            </Link>
+            <Link href="/dashboard/vendors" className="hover:underline">
               Vendors
             </Link>
             <Link href="/dashboard/insights" className="hover:underline">

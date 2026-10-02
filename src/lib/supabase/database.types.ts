@@ -247,23 +247,107 @@ export type Database = {
           },
         ]
       }
+      membership_events: {
+        Row: {
+          action: string
+          changed_at: string
+          changed_by: string | null
+          id: number
+          new_role: Database["public"]["Enums"]["member_role"] | null
+          old_role: Database["public"]["Enums"]["member_role"] | null
+          organization_id: string
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: never
+          new_role?: Database["public"]["Enums"]["member_role"] | null
+          old_role?: Database["public"]["Enums"]["member_role"] | null
+          organization_id: string
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          changed_at?: string
+          changed_by?: string | null
+          id?: never
+          new_role?: Database["public"]["Enums"]["member_role"] | null
+          old_role?: Database["public"]["Enums"]["member_role"] | null
+          organization_id?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      org_invites: {
+        Row: {
+          accepted_at: string | null
+          accepted_by: string | null
+          created_at: string
+          created_by: string | null
+          email: string | null
+          expires_at: string
+          id: string
+          organization_id: string
+          revoked_at: string | null
+          role: Database["public"]["Enums"]["member_role"]
+          token_hash: string
+        }
+        Insert: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          expires_at: string
+          id?: string
+          organization_id: string
+          revoked_at?: string | null
+          role: Database["public"]["Enums"]["member_role"]
+          token_hash: string
+        }
+        Update: {
+          accepted_at?: string | null
+          accepted_by?: string | null
+          created_at?: string
+          created_by?: string | null
+          email?: string | null
+          expires_at?: string
+          id?: string
+          organization_id?: string
+          revoked_at?: string | null
+          role?: Database["public"]["Enums"]["member_role"]
+          token_hash?: string
+        }
+        Relationships: []
+      }
       organizations: {
         Row: {
           created_at: string
           id: string
+          is_sandbox: boolean
+          is_template: boolean
           name: string
+          reminder_sent_at: string | null
           slug: string
         }
         Insert: {
           created_at?: string
           id?: string
+          is_sandbox?: boolean
+          is_template?: boolean
           name: string
+          reminder_sent_at?: string | null
           slug: string
         }
         Update: {
           created_at?: string
           id?: string
+          is_sandbox?: boolean
+          is_template?: boolean
           name?: string
+          reminder_sent_at?: string | null
           slug?: string
         }
         Relationships: []
@@ -531,9 +615,59 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      accept_org_invite: { Args: { p_token: string }; Returns: string }
       create_followup_assessment: {
         Args: { p_template_id?: string; p_tiering_assessment_id: string }
         Returns: string
+      }
+      create_org_invite: {
+        Args: {
+          p_email?: string
+          p_org: string
+          p_role: Database["public"]["Enums"]["member_role"]
+          p_valid_for?: string
+        }
+        Returns: string
+      }
+      create_sandbox_workspace: { Args: { p_name: string }; Returns: string }
+      get_org_invite: {
+        Args: { p_token: string }
+        Returns: {
+          expires_at: string
+          organization_name: string
+          role: Database["public"]["Enums"]["member_role"]
+          status: string
+        }[]
+      }
+      keepalive: { Args: never; Returns: number }
+      org_members: {
+        Args: { p_org: string }
+        Returns: {
+          email: string
+          is_you: boolean
+          joined_at: string
+          last_sign_in_at: string | null
+          role: Database["public"]["Enums"]["member_role"]
+          user_id: string
+        }[]
+      }
+      remove_member: {
+        Args: { p_org: string; p_user: string }
+        Returns: undefined
+      }
+      revoke_org_invite: { Args: { p_invite_id: string }; Returns: undefined }
+      sandbox_maintenance: { Args: { p_secret: string }; Returns: Json }
+      sandbox_mark_reminded: {
+        Args: { p_orgs: string[]; p_secret: string }
+        Returns: number
+      }
+      set_member_role: {
+        Args: {
+          p_org: string
+          p_role: Database["public"]["Enums"]["member_role"]
+          p_user: string
+        }
+        Returns: undefined
       }
       current_user_role: {
         Args: { org_id: string }
