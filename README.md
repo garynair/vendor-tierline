@@ -14,14 +14,12 @@ Vendor Tierline scores each vendor **engagement** (not just the vendor) against 
 
 Vendors can fill questionnaires through a token link without an account, or an internal user can complete them on the vendor's behalf.
 
-## Try the demo
+## Try it
 
-Sign in at [vendor-tierline.vercel.app](https://vendor-tierline.vercel.app) with the read-only demo account:
+Go to [vendor-tierline.vercel.app](https://vendor-tierline.vercel.app). There are two ways in:
 
-- **Email:** `demo@example.com`
-- **Password:** `Password@123`
-
-The demo account has the read-only *learner* role in a sample organization with fictional vendors, scores, reviewer overrides, and follow-ups. It can browse everything, including the Insights dashboard, but row-level security blocks all changes.
+- **Explore the demo (one click, no sign-up).** Opens a sample organization with 27 fictional vendors, scores, reviewer overrides, and follow-ups as a read-only user. It can browse everything, including the Insights dashboard, but row-level security blocks all changes. The same account works from the login form: `demo@example.com` / `Password@123`.
+- **Create your own workspace.** Sign up and confirm your email to get a private workspace where you're the admin, either pre-loaded with the sample data or empty (the samples can be loaded later from Settings). You can add vendors, run assessments, override tiers, and invite teammates. Workspaces with no sign-in for 30 days are deleted after an email reminder.
 
 ## Insights dashboard
 
@@ -29,15 +27,32 @@ The demo account has the read-only *learner* role in a sample organization with 
 
 The Insights page shows the final tier mix, the tiering pipeline, monthly intake, the reviewer-override audit trail, and aging of open follow-ups. It reads from `dash_*` database views that respect each organization's row-level security. The screenshot uses fictional demo data.
 
+## Users and roles
+
+Each workspace has three roles, enforced in the database rather than only hidden in the UI:
+
+| Role | Can |
+| --- | --- |
+| Admin | Everything below, plus edit risk tiers and questionnaires, invite users, change roles |
+| Practitioner | Add vendors and engagements, send questionnaires, review and override tiers |
+| Read-only | View vendors, assessments, and Insights |
+
+Admins invite teammates with a one-time join link (7-day expiry; only a hash of the token is stored). Role changes and removals are recorded in an audit log, the last admin can't be demoted or removed, and non-admins see member emails partly masked.
+
 ## Status
 
-**v1.0** (23 Sep 2026). The two-stage flow from the [architecture](docs/architecture.md) is live: vendor token links, internal fill, scoring, reviewer confirm/override, tier-mapped follow-ups, a getting-started checklist, and dark mode. Schema changes live in `supabase/migrations/`.
+**v1.1** (2 Oct 2026). Adds a Home overview (snapshot, tier mix, items needing attention), Users & roles with invite links, self-service workspaces with optional sample data, Cloudflare Turnstile bot protection on sign-in and sign-up, strong password rules, and a scanner-safe email confirmation step.
+
+**v1.0** (23 Sep 2026). The two-stage flow from the [architecture](docs/architecture.md): vendor token links, internal fill, scoring, reviewer confirm/override, tier-mapped follow-ups, a getting-started checklist, and dark mode.
+
+Schema changes live in `supabase/migrations/`.
 
 ## Stack
 
 - Next.js (App Router) and Tailwind CSS
 - Supabase: Postgres, Auth, and row-level security scoped by organization membership
-- Vercel for hosting
+- Vercel for hosting and scheduled jobs (database keep-alive, inactive-workspace cleanup)
+- Cloudflare Turnstile for bot protection; Resend for transactional email
 
 ## Local development
 
@@ -46,6 +61,11 @@ Create `.env.local` with your Supabase project values:
 ```bash
 NEXT_PUBLIC_SUPABASE_URL=...
 NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=...
+
+# Optional
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=...  # bot check; leave unset unless CAPTCHA is on in Supabase
+CRON_SECRET=...                     # protects the scheduled-job routes
+RESEND_API_KEY=...                  # inactivity reminder emails
 ```
 
 Then:
