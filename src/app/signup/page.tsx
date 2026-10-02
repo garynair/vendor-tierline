@@ -14,8 +14,27 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
 
-  const rulesMet = PASSWORD_RULES.every((rule) => rule.test(password));
+  const [formError, setFormError] = useState<string | null>(null);
+
   const mismatch = confirm.length > 0 && confirm !== password;
+
+  // The button is always clickable; a click explains what's missing instead
+  // of a disabled button that gives no reason.
+  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const missing = PASSWORD_RULES.filter((rule) => !rule.test(password)).map((rule) => rule.label.toLowerCase());
+    if (missing.length > 0) {
+      event.preventDefault();
+      setFormError(`Your password still needs: ${missing.join(", ")}.`);
+      return;
+    }
+    if (confirm !== password) {
+      event.preventDefault();
+      setFormError("The passwords don't match. Type the same password in both fields.");
+      return;
+    }
+    setFormError(null);
+    captcha.onSubmit(event);
+  };
 
   return (
     <AuthShell
@@ -35,7 +54,7 @@ export default function SignupPage() {
       {state?.message ? (
         <AuthNotice tone="success">{state.message}</AuthNotice>
       ) : (
-        <form onSubmit={captcha.onSubmit} action={formAction} className="flex flex-col gap-4">
+        <form onSubmit={onSubmit} action={formAction} className="flex flex-col gap-4">
           <AuthField label="Work email">
             <input type="email" name="email" autoComplete="email" required className={authInputClass} />
           </AuthField>
@@ -47,7 +66,7 @@ export default function SignupPage() {
               required
               minLength={10}
               value={password}
-              onChange={(event) => setPassword(event.target.value)}
+              onChange={(event) => { setPassword(event.target.value); setFormError(null); }}
               aria-describedby="password-rules"
               className={authInputClass}
             />
@@ -70,16 +89,16 @@ export default function SignupPage() {
               autoComplete="new-password"
               required
               value={confirm}
-              onChange={(event) => setConfirm(event.target.value)}
+              onChange={(event) => { setConfirm(event.target.value); setFormError(null); }}
               className={authInputClass}
             />
             {mismatch && <span className="text-xs font-normal text-red-400">Passwords don&apos;t match yet.</span>}
           </AuthField>
           <Turnstile resetKey={state} onToken={captcha.setToken} onFailed={captcha.setFailed} />
-          {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
+          {(formError ?? state?.error) && <AuthNotice tone="error">{formError ?? state?.error}</AuthNotice>}
           <button
             type="submit"
-            disabled={pending || captcha.queued || captcha.status === "failed" || !rulesMet || mismatch || !confirm}
+            disabled={pending || captcha.queued || captcha.status === "failed"}
             className={`${authButtonClass} mt-2`}
           >
             {pending ? "Creating workspace…" : captchaButtonLabel(captcha, "Create workspace", "Creating workspace…")}
