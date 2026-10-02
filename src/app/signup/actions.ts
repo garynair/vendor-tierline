@@ -8,9 +8,14 @@ export async function signup(_prevState: unknown, formData: FormData) {
   const supabase = await createClient();
 
   const email = String(formData.get("email"));
+  const password = String(formData.get("password") ?? "");
+  if (password !== String(formData.get("confirm_password") ?? "")) {
+    return { error: "The passwords don't match. Type the same password in both fields." };
+  }
+
   const { data, error } = await supabase.auth.signUp({
     email,
-    password: String(formData.get("password")),
+    password,
     options: { captchaToken: captchaToken(formData) },
   });
 

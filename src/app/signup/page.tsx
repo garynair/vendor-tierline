@@ -45,6 +45,16 @@ export default function SignupPage() {
               At least 10 characters, with letters and numbers.
             </span>
           </AuthField>
+          <AuthField label="Confirm password">
+            <input
+              type="password"
+              name="confirm_password"
+              autoComplete="new-password"
+              required
+              minLength={10}
+              className={authInputClass}
+            />
+          </AuthField>
           <Turnstile resetKey={state} />
           {state?.error && <AuthNotice tone="error">{state.error}</AuthNotice>}
           <button type="submit" disabled={pending} className={`${authButtonClass} mt-2`}>
